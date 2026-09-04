@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Project mata kuliah UI/UX Pendidikan — sedang dalam pengembangan.">
+  <title>UI/UX Pendidikan | Coming Soon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Floating orbs background -->
+  <div class="bg-orb orb-1" aria-hidden="true"></div>
+  <div class="bg-orb orb-2" aria-hidden="true"></div>
+  <div class="bg-orb orb-3" aria-hidden="true"></div>
+
+  <!-- Particle canvas -->
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <main class="hero">
+    <div class="glass-card">
+
+      <div class="badge" id="status-badge">
+        <span class="badge-dot"></span>
+        Sedang Dikembangkan
+      </div>
+
+      <div class="icon-wrapper" aria-hidden="true">
+        <svg class="icon-main" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="8" width="56" height="40" rx="6" stroke="url(#grad1)" stroke-width="3" fill="none" />
+          <path d="M4 32h56" stroke="url(#grad1)" stroke-width="1.5" stroke-dasharray="4 3" />
+          <rect x="16" y="52" width="32" height="4" rx="2" fill="url(#grad1)" />
+          <circle cx="32" cy="22" r="6" stroke="url(#grad1)" stroke-width="2.5" fill="none" />
+          <path d="M26 38c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="url(#grad1)" stroke-width="2.5" stroke-linecap="round"
+            fill="none" />
+          <defs>
+            <linearGradient id="grad1" x1="4" y1="8" x2="60" y2="56" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#a78bfa" />
+              <stop offset="100%" stop-color="#38bdf8" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <h1 class="title">UI/UX <span class="highlight">Pendidikan</span></h1>
+      <p class="subtitle">
+        Website untuk mata kuliah UI/UX.<br>
+        Konten sedang disiapkan.<br>
+        Estimasi : 1 Semester
+      </p>
+
+      <div class="divider" aria-hidden="true"></div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <div>
+            <div class="info-label">Jenis</div>
+            <div class="info-value">Proyek Mata Kuliah</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div>
+            <div class="info-label">Status</div>
+            <div class="info-value">Dalam Pengembangan</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div>
+            <div class="info-label">Platform</div>
+            <div class="info-value">GitHub Pages</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-area">
+        <button class="btn-primary" id="notify-btn" type="button">
+          <span>Pantau Perkembangan</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Dibuat Oleh : <a href="https://github.com" target="_blank" rel="noopener noreferrer">Kelompok 6</a></p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
