@@ -29,6 +29,52 @@ import {
   CartesianGrid,
 } from 'recharts';
 
+// ─── destination images (from public/images/) ───────────────────────────────
+const destinations = [
+  {
+    name: 'Jatim Park 1',
+    tag: 'Taman Bermain',
+    desc: 'Wahana edukatif dan taman bermain keluarga dengan tema sains dan budaya Jawa Timur.',
+    img: `${import.meta.env.BASE_URL}images/jatimpark1.jpg`,
+  },
+  {
+    name: 'Jatim Park 2',
+    tag: 'Kebun Binatang',
+    desc: 'Batu Secret Zoo dan Museum Satwa — destinasi satwa terlengkap di Jawa Timur.',
+    img: `${import.meta.env.BASE_URL}images/jatimpark2.jpg`,
+  },
+  {
+    name: 'Museum Angkut',
+    tag: 'Museum',
+    desc: 'Museum transportasi tematik dengan koleksi kendaraan dari berbagai era dan dunia.',
+    img: `${import.meta.env.BASE_URL}images/museum-angkut.jpg`,
+  },
+  {
+    name: 'BNS',
+    tag: 'Hiburan Malam',
+    desc: 'Batu Night Spectacular — taman hiburan malam dengan pertunjukan cahaya dan wahana.',
+    img: `${import.meta.env.BASE_URL}images/bns.jpg`,
+  },
+  {
+    name: 'Selecta',
+    tag: 'Rekreasi Alam',
+    desc: 'Taman rekreasi legendaris peninggalan Belanda dengan kolam renang dan taman bunga.',
+    img: `${import.meta.env.BASE_URL}images/selecta.jpg`,
+  },
+  {
+    name: 'Eco Green Park',
+    tag: 'Edukasi Alam',
+    desc: 'Taman burung dan alam hijau dengan konsep edukasi konservasi lingkungan.',
+    img: `${import.meta.env.BASE_URL}images/ecogreen.jpg`,
+  },
+  {
+    name: 'Coban Rondo',
+    tag: 'Wisata Alam',
+    desc: 'Air terjun legendaris setinggi 84 meter di tengah hutan pinus Kota Batu.',
+    img: `${import.meta.env.BASE_URL}images/coban-rondo.jpg`,
+  },
+]
+
 // ─── data ───────────────────────────────────────────────────────────────────
 const visitorData = [
   { name: 'Sen', value: 1842 },
@@ -464,6 +510,67 @@ export default function Landing() {
                 </ul>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Destinasi Wisata Gallery ─────────────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="mb-10 max-w-xl">
+          <p className="text-xs font-semibold uppercase tracking-widest text-teal-600 mb-3 flex items-center gap-2">
+            <span className="w-5 h-px bg-teal-600 inline-block" /> Destinasi
+          </p>
+          <h2
+            className="text-3xl text-slate-900 leading-snug"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
+          >
+            7 destinasi wisata unggulan Kota Batu
+          </h2>
+          <p className="text-slate-500 mt-3 text-sm leading-relaxed">
+            Platform memantau kondisi real-time seluruh destinasi — dari jumlah pengunjung, wahana aktif, hingga sensor IoT.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {destinations.slice(0, 6).map(({ name, tag, desc, img }) => (
+            <div key={name} className="group border border-slate-200 rounded-xl overflow-hidden hover:shadow-md hover:border-teal-200 transition-all duration-200">
+              <div className="relative h-44 bg-slate-200 overflow-hidden">
+                <img
+                  src={img}
+                  alt={name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent" />
+                <span className="absolute top-3 left-3 text-xs font-medium bg-teal-600 text-white px-2 py-0.5 rounded">
+                  {tag}
+                </span>
+              </div>
+              <div className="p-4">
+                <h3 className="font-semibold text-slate-900 text-sm mb-1">{name}</h3>
+                <p className="text-xs text-slate-500 leading-relaxed">{desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 7th destination — full width teaser */}
+        <div className="mt-5 group border border-slate-200 rounded-xl overflow-hidden hover:shadow-md hover:border-teal-200 transition-all duration-200 flex flex-col sm:flex-row">
+          <div className="relative sm:w-72 h-48 sm:h-auto bg-slate-200 overflow-hidden flex-shrink-0">
+            <img
+              src={destinations[6].img}
+              alt={destinations[6].name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-slate-900/10" />
+          </div>
+          <div className="p-5 flex flex-col justify-center">
+            <span className="text-xs font-medium bg-teal-50 text-teal-700 px-2 py-0.5 rounded w-fit mb-2">
+              {destinations[6].tag}
+            </span>
+            <h3 className="font-semibold text-slate-900 text-base mb-2">{destinations[6].name}</h3>
+            <p className="text-sm text-slate-500 leading-relaxed">{destinations[6].desc}</p>
           </div>
         </div>
       </section>

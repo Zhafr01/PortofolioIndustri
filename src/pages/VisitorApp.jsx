@@ -3,9 +3,9 @@ import { Heart, Shield, QrCode, Bell, MapPin, ChevronRight } from 'lucide-react'
 import AnimatedBar from '../components/AnimatedBar'
 
 const destinations = [
-  { name:'Jatim Park 2', occ:72, level:'Ramai' },
-  { name:'BNS',          occ:45, level:'Sedang' },
-  { name:'Selecta',      occ:28, level:'Lengang' },
+  { name:'Jatim Park 2', occ:72, level:'Ramai',   img: `${import.meta.env.BASE_URL}images/jatimpark2.jpg` },
+  { name:'BNS',          occ:45, level:'Sedang',  img: `${import.meta.env.BASE_URL}images/bns.jpg` },
+  { name:'Selecta',      occ:28, level:'Lengang', img: `${import.meta.env.BASE_URL}images/selecta.jpg` },
 ]
 const levelColor = { Ramai:'text-amber-600', Sedang:'text-teal-600', Lengang:'text-emerald-600' }
 
@@ -79,12 +79,13 @@ export default function VisitorApp() {
                 <div>
                   <p className="text-sm font-semibold text-slate-900 mb-3">Destinasi Favorit</p>
                   <div className="flex gap-3 overflow-x-auto pb-1">
-                    {[{name:'Jatim Park 2',occ:'Ramai'},{name:'BNS',occ:'Sedang'}].map((d, i) => (
-                      <div key={i} className="flex-shrink-0 w-44 h-24 bg-slate-800 rounded-md relative overflow-hidden">
+                    {destinations.slice(0,2).map((d, i) => (
+                      <div key={i} className="flex-shrink-0 w-44 h-24 rounded-md relative overflow-hidden bg-slate-800">
+                        <img src={d.img} alt={d.name} className="w-full h-full object-cover" loading="lazy" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                         <div className="absolute bottom-2 left-3">
                           <p className="text-white text-sm font-semibold">{d.name}</p>
-                          <p className="text-white/70 text-xs">{d.occ}</p>
+                          <p className="text-white/70 text-xs">{d.level}</p>
                         </div>
                       </div>
                     ))}
@@ -98,7 +99,10 @@ export default function VisitorApp() {
                     {destinations.map((d, i) => (
                       <div key={i}>
                         <div className="flex justify-between text-xs mb-1.5">
-                          <span className="text-slate-700 font-medium">{d.name}</span>
+                          <span className="flex items-center gap-2">
+                            <img src={d.img} alt={d.name} className="w-5 h-5 rounded-full object-cover flex-shrink-0" />
+                            <span className="text-slate-700 font-medium">{d.name}</span>
+                          </span>
                           <span className={`font-semibold ${levelColor[d.level]}`}>{d.level} ({d.occ}%)</span>
                         </div>
                         <AnimatedBar value={d.occ} color={d.occ > 60 ? 'amber' : 'teal'} />
