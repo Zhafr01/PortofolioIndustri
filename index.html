@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ══ Primary SEO ═══════════════════════════════════════════════════════ -->
+    <title>Platform Monitoring Wisata Kota Batu</title>
+    <meta name="description" content="Sistem monitoring destinasi wisata terpadu untuk pengunjung, pengelola, dan pemerintah Kota Batu. Pantau kunjungan real-time, sensor IoT, dan kelola ekspansi berbasis data." />
+    <meta name="keywords" content="wisata kota batu, monitoring destinasi, jatim park, museum angkut, platform wisata, IoT sensor wahana" />
+    <meta name="author" content="Platform Monitoring Wisata Kota Batu" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- ══ Open Graph (Facebook, WhatsApp, Telegram, LinkedIn) ═══════════════ -->
+    <meta property="og:type"         content="website" />
+    <meta property="og:site_name"    content="Wisata Batu Platform" />
+    <meta property="og:title"        content="Platform Monitoring Destinasi Wisata Kota Batu" />
+    <meta property="og:description"  content="Sistem monitoring destinasi wisata terpadu — pengunjung, pengelola, dan pemerintah dalam satu ekosistem digital. Dashboard real-time, alert darurat, sensor IoT, dan prediksi ekspansi." />
+    <meta property="og:url"          content="%VITE_SITE_URL%" />
+    <meta property="og:image"        content="%VITE_SITE_URL%og-image.png" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt"    content="Platform Monitoring Wisata Kota Batu — Dashboard, IoT, Alert Darurat" />
+    <meta property="og:locale"       content="id_ID" />
+
+    <!-- ══ Twitter / X Card ══════════════════════════════════════════════════ -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="Platform Monitoring Destinasi Wisata Kota Batu" />
+    <meta name="twitter:description" content="Sistem monitoring destinasi wisata terpadu — pengunjung, pengelola, dan pemerintah dalam satu ekosistem digital." />
+    <meta name="twitter:image"       content="%VITE_SITE_URL%og-image.png" />
+    <meta name="twitter:image:alt"   content="Platform Monitoring Wisata Kota Batu" />
+
+    <!-- ══ Favicon ═══════════════════════════════════════════════════════════ -->
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+
+    <!-- ══ GitHub Pages SPA Routing ══════════════════════════════════════════ -->
+    <script>
+      // Redirect dari 404.html kembali ke SPA
+      (function(l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&');
+          });
+          window.history.replaceState(
+            null, null,
+            l.pathname.slice(0, -1) + decoded[0] +
+            (decoded[1] ? '?' + decoded[1] : '') + l.hash
+          );
+        }
+      }(window.location));
+    </script>
+
+    <!-- ══ Fonts ══════════════════════════════════════════════════════════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
