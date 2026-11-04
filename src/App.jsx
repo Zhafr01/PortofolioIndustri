@@ -14,9 +14,11 @@ import ExpansionPage from './pages/ExpansionPage'
 import VisitorApp from './pages/VisitorApp'
 import TechnicalApp from './pages/TechnicalApp'
 
+const basename = import.meta.env.BASE_URL   // set by vite 'base' config (e.g. '/PortofolioIndustri/')
+
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
