@@ -515,7 +515,7 @@ export default function Landing() {
       </section>
 
       {/* ── Destinasi Wisata Gallery ─────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <section id="destinasi" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="mb-10 max-w-xl">
           <p className="text-xs font-semibold uppercase tracking-widest text-teal-600 mb-3 flex items-center gap-2">
             <span className="w-5 h-px bg-teal-600 inline-block" /> Destinasi
@@ -576,7 +576,7 @@ export default function Landing() {
       </section>
 
       {/* ── Roadmap ──────────────────────────────────────────────────────── */}
-      <section id="destinasi" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <section id="roadmap" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="mb-10">
           <p className="text-xs font-semibold uppercase tracking-widest text-teal-600 mb-3 flex items-center gap-2">
             <span className="w-5 h-px bg-teal-600 inline-block" /> Pengembangan
@@ -668,10 +668,16 @@ export default function Landing() {
           <div>
             <p className="text-white text-xs font-semibold uppercase tracking-widest mb-4">Navigasi</p>
             <ul className="flex flex-col gap-2.5">
-              {['Tentang Platform', 'Modul Fitur', 'Roadmap', 'Kontak'].map((l) => (
-                <li key={l}>
-                  <a href="#" className="text-xs text-slate-500 hover:text-teal-400 transition-colors">
-                    {l}
+              {[
+                { label: 'Tentang Platform', href: '#tentang' },
+                { label: 'Modul Fitur', href: '#fitur' },
+                { label: 'Destinasi Wisata', href: '#destinasi' },
+                { label: 'Roadmap', href: '#roadmap' },
+                { label: 'Kontak', href: '#kontak' },
+              ].map((l) => (
+                <li key={l.label}>
+                  <a href={l.href} className="text-xs text-slate-500 hover:text-teal-400 transition-colors">
+                    {l.label}
                   </a>
                 </li>
               ))}

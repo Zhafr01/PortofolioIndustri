@@ -24,10 +24,16 @@ export default function ExpansionApproval() {
   const navigate = useNavigate()
   const [catatan,  setCatatan]  = useState('')
   const [decision, setDecision] = useState(null) // null | 'approved' | 'rejected'
+  const [toastMsg, setToastMsg] = useState('')
 
   function handleDecide(type) {
     setDecision(type)
     setTimeout(() => navigate('/gov-admin'), 2200)
+  }
+
+  function handleDownloadDoc(docName) {
+    setToastMsg(`Mengunduh dokumen: ${docName}...`)
+    setTimeout(() => setToastMsg(''), 3000)
   }
 
   return (
@@ -37,6 +43,14 @@ export default function ExpansionApproval() {
           <Topbar title="Telaah Proposal"
             breadcrumb={[{label:'Dashboard Pemerintah',to:'/gov-admin'},{label:'Telaah Proposal'}]}
             onMenuClick={toggleSidebar} />
+
+          {toastMsg && (
+            <div className="fixed top-4 right-4 z-50 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-xl text-xs font-medium border border-slate-700 flex items-center gap-2 animate-in fade-in">
+              <Download size={16} className="text-teal-400 animate-bounce" />
+              <span>{toastMsg}</span>
+            </div>
+          )}
+
           <main className="p-4 sm:p-6">
             <div className="grid md:grid-cols-9 gap-6">
               {/* Left: proposal detail */}
@@ -77,7 +91,13 @@ export default function ExpansionApproval() {
                             <FileText size={14} className="text-slate-400 flex-shrink-0" />
                             <span className="text-sm text-slate-700">{doc}</span>
                           </div>
-                          <button className="text-teal-600 hover:text-teal-700"><Download size={14} /></button>
+                          <button
+                            onClick={() => handleDownloadDoc(doc)}
+                            className="text-teal-600 hover:text-teal-800 p-1 hover:bg-slate-200 rounded transition-colors"
+                            aria-label={`Unduh ${doc}`}
+                          >
+                            <Download size={14} />
+                          </button>
                         </div>
                       ))}
                     </div>

@@ -9,6 +9,9 @@ import {
   ArrowLeft,
   User,
   MapPin,
+  X,
+  CheckCircle2,
+  Phone,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -55,6 +58,10 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({ email: '', password: '' });
+  const [resetModalOpen, setResetModalOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetSent, setResetSent] = useState(false);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
 
   function validate() {
     const newErrors = { email: '', password: '' };
@@ -289,9 +296,13 @@ export default function Login() {
 
             {/* Forgot password */}
             <div className="flex justify-end -mt-2">
-              <a href="#" className="text-xs text-teal-600 hover:text-teal-700 transition-colors">
+              <button
+                type="button"
+                onClick={() => { setResetModalOpen(true); setResetSent(false); setResetEmail(email || '') }}
+                className="text-xs text-teal-600 hover:text-teal-700 transition-colors font-medium"
+              >
                 Lupa kata sandi?
-              </a>
+              </button>
             </div>
 
             {/* Submit */}
@@ -347,10 +358,114 @@ export default function Login() {
           {/* Footer note */}
           <p className="text-xs text-slate-400 mt-5 text-center border-t border-slate-100 pt-5">
             Belum punya akun?{' '}
-            <span className="text-slate-700 font-medium">Hubungi pengelola platform</span>
+            <button
+              type="button"
+              onClick={() => setContactModalOpen(true)}
+              className="text-teal-600 hover:text-teal-700 font-semibold hover:underline"
+            >
+              Hubungi pengelola platform
+            </button>
           </p>
         </div>
       </div>
+
+      {/* Reset Password Modal */}
+      {resetModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4">
+            <div className="flex justify-between items-start pb-2 border-b border-slate-100">
+              <div>
+                <h3 className="font-display text-lg text-slate-900">Atur Ulang Kata Sandi</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Masukkan email akun terdaftar Anda</p>
+              </div>
+              <button onClick={() => setResetModalOpen(false)} className="text-slate-400 hover:text-slate-700">
+                <X size={18} />
+              </button>
+            </div>
+
+            {!resetSent ? (
+              <div className="flex flex-col gap-3 text-xs">
+                <div>
+                  <label className="font-semibold text-slate-700 block mb-1">Email Akun</label>
+                  <input
+                    type="email"
+                    value={resetEmail}
+                    onChange={e => setResetEmail(e.target.value)}
+                    placeholder="nama@wisatabatu.id"
+                    className="w-full border border-slate-200 rounded px-3 py-2 text-slate-800"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { if (resetEmail) setResetSent(true) }}
+                  className="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded transition-colors"
+                >
+                  Kirim Tautan Pemulihan
+                </button>
+              </div>
+            ) : (
+              <div className="text-center py-3">
+                <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <CheckCircle2 size={24} className="text-emerald-600" />
+                </div>
+                <p className="text-sm font-semibold text-slate-900">Tautan Berhasil Dikirim!</p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Instruksi pengaturan ulang kata sandi telah dikirimkan ke <strong className="text-slate-700">{resetEmail}</strong>.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setResetModalOpen(false)}
+                  className="mt-4 w-full py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded"
+                >
+                  Selesai
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Helpdesk Contact Modal */}
+      {contactModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4">
+            <div className="flex justify-between items-start pb-2 border-b border-slate-100">
+              <div>
+                <h3 className="font-display text-lg text-slate-900">Bantuan Akses Akun</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Dinas Pariwisata &amp; Tim IT Kota Batu</p>
+              </div>
+              <button onClick={() => setContactModalOpen(false)} className="text-slate-400 hover:text-slate-700">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="text-xs text-slate-600 space-y-3">
+              <p>Pendaftaran akun pengelola destinasi (Branch Admin) dan staf teknis dilakukan melalui verifikasi Dinas Pariwisata Kota Batu.</p>
+              
+              <div className="bg-slate-50 p-3 rounded border border-slate-200 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Phone size={14} className="text-teal-600" />
+                  <span className="font-medium text-slate-800">Helpdesk IT: (0341) 591-111 (Ext. 204)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail size={14} className="text-teal-600" />
+                  <span className="font-medium text-slate-800">admin@pariwisata.batukota.go.id</span>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-slate-400">Jam Layanan: Senin - Jumat (08.00 - 16.00 WIB)</p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setContactModalOpen(false)}
+              className="w-full py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -5,7 +5,7 @@ import Topbar from '../components/Topbar'
 import StatBlock from '../components/StatBlock'
 import AnimatedBar from '../components/AnimatedBar'
 import BarChartWidget from '../components/BarChartWidget'
-import { Compass, MapPin, Radio, Users, CheckCircle, Navigation } from 'lucide-react'
+import { Compass, MapPin, Radio, Users, CheckCircle, Navigation, Download, X, CheckCircle2 } from 'lucide-react'
 
 const monthData6 = [
   { name:'Jan', value:38200 }, { name:'Feb', value:41500 }, { name:'Mar', value:39800 },
@@ -55,7 +55,19 @@ const rangeTabs = ['6 Bulan','1 Tahun']
 export default function GovAdmin() {
   const [range, setRange] = useState('6 Bulan')
   const [selectedNode, setSelectedNode] = useState(mapNodes[1]) // Default to Jatim Park 2
+  const [exportModalOpen, setExportModalOpen] = useState(false)
+  const [exportFormat, setExportFormat] = useState('PDF Ringkasan Eksekutif')
+  const [toastMsg, setToastMsg] = useState('')
   const chartData = range === '6 Bulan' ? monthData6 : monthData12
+
+  function handleTriggerExport() {
+    setToastMsg(`Mengunduh berkas laporan dalam format ${exportFormat}...`)
+    setTimeout(() => {
+      setToastMsg(`✓ Berkas laporan berhasil diunduh.`)
+      setTimeout(() => setToastMsg(''), 3000)
+    }, 1500)
+    setExportModalOpen(false)
+  }
 
   return (
     <PageWrapper role="gov" active="/gov-admin">
@@ -63,7 +75,24 @@ export default function GovAdmin() {
         <>
           <Topbar title="Dashboard Pemerintah"
             breadcrumb={[{ label:'Dashboard Pemerintah' }]}
-            onMenuClick={toggleSidebar} notifCount={2} />
+            onMenuClick={toggleSidebar} notifCount={2}
+            actions={
+              <button
+                onClick={() => setExportModalOpen(true)}
+                className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+              >
+                <Download size={13} /> Ekspor Laporan
+              </button>
+            }
+          />
+
+          {toastMsg && (
+            <div className="fixed top-4 right-4 z-50 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-xl text-xs font-medium border border-slate-700 flex items-center gap-2 animate-in fade-in">
+              <CheckCircle2 size={16} className="text-teal-400" />
+              <span>{toastMsg}</span>
+            </div>
+          )}
+
           <main className="p-4 sm:p-6 flex flex-col gap-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <StatBlock label="Total Destinasi Aktif"       value="7"      sub="Wilayah Kota Batu" />
@@ -448,6 +477,65 @@ export default function GovAdmin() {
               </div>
             </div>
           </main>
+
+          {/* Export Laporan Modal */}
+          {exportModalOpen && (
+            <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg w-full max-w-md p-6 shadow-2xl flex flex-col gap-4">
+                <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+                  <h3 className="font-display text-xl text-slate-900">Ekspor Laporan Analisis Pemerintah</h3>
+                  <button onClick={() => setExportModalOpen(false)} className="text-slate-400 hover:text-slate-700">
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-3 text-xs">
+                  <div>
+                    <label className="font-semibold text-slate-700 block mb-1">Cakupan Wilayah &amp; Waktu</label>
+                    <select className="w-full border border-slate-200 rounded px-3 py-2 text-slate-800 bg-white">
+                      <option>Seluruh Kota Batu • Kuartal 4 (Q4) 2026</option>
+                      <option>Kecamatan Bumiaji • Oktober 2026</option>
+                      <option>Kecamatan Batu • Oktober 2026</option>
+                      <option>Kecamatan Junrejo • Oktober 2026</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="font-semibold text-slate-700 block mb-1">Format Unduhan</label>
+                    <div className="flex flex-col gap-2">
+                      {['PDF Ringkasan Eksekutif (Disposisi Kadis)', 'Excel (.XLSX) Data Agregat Sensor & Kunjungan', 'GeoJSON Peta Spasial Sebaran Destinasi'].map(f => (
+                        <label key={f} className="flex items-center gap-2 p-2 rounded border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="fmt"
+                            checked={exportFormat === f}
+                            onChange={() => setExportFormat(f)}
+                            className="accent-teal-600"
+                          />
+                          <span className="text-slate-700">{f}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                  <button
+                    onClick={() => setExportModalOpen(false)}
+                    className="px-4 py-2 border border-slate-200 rounded text-slate-600 hover:bg-slate-50 text-xs font-semibold"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    onClick={handleTriggerExport}
+                    className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-semibold flex items-center gap-1.5"
+                  >
+                    <Download size={13} /> Unduh Berkas
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
     </PageWrapper>

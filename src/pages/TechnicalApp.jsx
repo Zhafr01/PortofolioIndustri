@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Camera, ChevronRight, FileText, AlertTriangle, CheckCircle, Wrench, Shield, Activity, RefreshCw } from 'lucide-react'
+import { Camera, ChevronRight, FileText, AlertTriangle, CheckCircle, Wrench, Shield, Activity, RefreshCw, X, Download, Calendar, BookOpen, Clock, CheckCircle2 } from 'lucide-react'
 
-const alertData = [
+const initialAlertData = [
   { id: 'AL-001', tipe: 'Teknis', subtipe: 'Sensor', wahana: 'Roller Coaster Alpha', waktu: '14:32', age: '2 menit lalu', status: 'Dilaporkan',   urgent: true,  detail: 'Anomali getaran bearing melebihi batas 4.0g (tercatat 5.1g).' },
   { id: 'AL-002', tipe: 'Teknis', subtipe: 'Manual', wahana: 'Bianglala Raksasa',    waktu: '13:15', age: '1 jam lalu',   status: 'Dalam Proses', urgent: false, detail: 'Pengecekan hidrolik pintu gondola 12.' },
   { id: 'AL-004', tipe: 'Keamanan', subtipe: 'Manual', wahana: 'Pintu Masuk B',      waktu: '11:20', age: '3 jam lalu',   status: 'Selesai',      urgent: false, detail: 'Penertiban antrian pengunjung di gerbang tiket.' },
@@ -24,13 +24,21 @@ function rand(base, pct = 5) {
 export default function TechnicalApp() {
   const [tab, setTab] = useState('alerts')
   const [filterTab, setFilterTab] = useState('Semua')
-  const [selectedAlert, setSelectedAlert] = useState(alertData[0])
+  const [alertData, setAlertData] = useState(initialAlertData)
+  const [selectedAlert, setSelectedAlert] = useState(initialAlertData[0])
   const [isMobileDetailOpen, setIsMobileDetailOpen] = useState(false)
   const [log, setLog] = useState('')
   const [newStatus, setNewStatus] = useState('Diakui')
   const [saved, setSaved] = useState(false)
+  const [photoEvidence, setPhotoEvidence] = useState(null)
   const [reporting, setReporting] = useState(false)
   const [sensor, setSensor] = useState({ getaran: 2.3, suhu: 42, beban: 78 })
+
+  // Modal states
+  const [selectedReportDoc, setSelectedReportDoc] = useState(null)
+  const [selectedProfileModal, setSelectedProfileModal] = useState(null)
+  const [reportSendSuccess, setReportSendSuccess] = useState(false)
+  const [toastMsg, setToastMsg] = useState('')
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -47,7 +55,7 @@ export default function TechnicalApp() {
   const filtered = filterTab === 'Semua' ? alertData : alertData.filter(a => a.tipe === filterTab)
 
   const navTabs = [
-    { id: 'alerts',  label: 'Alert Aktif (2)' },
+    { id: 'alerts',  label: `Alert Aktif (${alertData.filter(a=>a.status!=='Selesai').length})` },
     { id: 'beranda', label: 'Monitoring Sensor' },
     { id: 'laporan', label: 'Laporan Tugas' },
     { id: 'profil',  label: 'Profil Teknisi' },
@@ -62,8 +70,21 @@ export default function TechnicalApp() {
 
   function handleSaveStatus() {
     if (selectedAlert) {
-      selectedAlert.status = newStatus
+      setAlertData(prev => prev.map(a => a.id === selectedAlert.id ? { ...a, status: newStatus } : a))
+      setSelectedAlert(prev => ({ ...prev, status: newStatus }))
       setSaved(true)
+    }
+  }
+
+  function handleAttachPhoto() {
+    if (photoEvidence) {
+      setPhotoEvidence(null)
+    } else {
+      setPhotoEvidence({
+        name: 'bukti_insiden_bearing_roller_01.jpg',
+        size: '2.4 MB',
+        time: 'Baru saja'
+      })
     }
   }
 
@@ -112,6 +133,14 @@ export default function TechnicalApp() {
           </div>
         </div>
       </header>
+
+      {/* Toast Notification */}
+      {toastMsg && (
+        <div className="fixed top-4 right-4 z-50 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-xl text-xs font-medium border border-slate-700 flex items-center gap-2 animate-in fade-in">
+          <CheckCircle2 size={16} className="text-teal-400" />
+          <span>{toastMsg}</span>
+        </div>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 md:pb-12">
@@ -271,9 +300,31 @@ export default function TechnicalApp() {
                       />
                     </div>
 
+                    {/* Attached Photo Evidence Preview */}
+                    {photoEvidence && (
+                      <div className="bg-slate-50 border border-slate-200 rounded p-2.5 flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Camera size={16} className="text-teal-600 flex-shrink-0" />
+                          <div className="truncate">
+                            <p className="font-semibold text-slate-800 truncate">{photoEvidence.name}</p>
+                            <p className="text-[10px] text-slate-400">{photoEvidence.size} • {photoEvidence.time}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setPhotoEvidence(null)}
+                          className="text-red-500 hover:text-red-700 text-xs font-semibold px-2"
+                        >
+                          Hapus
+                        </button>
+                      </div>
+                    )}
+
                     <div className="flex gap-2">
-                      <button className="flex-1 border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold py-2.5 rounded flex items-center justify-center gap-1.5">
-                        <Camera size={14} /> Unggah Foto Bukti
+                      <button
+                        onClick={handleAttachPhoto}
+                        className="flex-1 border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold py-2.5 rounded flex items-center justify-center gap-1.5 transition-colors"
+                      >
+                        <Camera size={14} /> {photoEvidence ? 'Ganti Foto' : 'Unggah Foto Bukti'}
                       </button>
                       <button
                         onClick={handleSaveStatus}
@@ -403,10 +454,24 @@ export default function TechnicalApp() {
                   <button onClick={() => setReporting(false)} className="text-xs px-4 py-2 border border-slate-200 rounded text-slate-600">
                     Batal
                   </button>
-                  <button onClick={() => setReporting(false)} className="text-xs px-4 py-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700">
+                  <button
+                    onClick={() => {
+                      setReportSendSuccess(true)
+                      setTimeout(() => {
+                        setReporting(false)
+                        setReportSendSuccess(false)
+                      }, 1500)
+                    }}
+                    className="text-xs px-4 py-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition-colors"
+                  >
                     Kirim ke Branch Admin &amp; Log Insiden
                   </button>
                 </div>
+                {reportSendSuccess && (
+                  <p className="text-xs text-emerald-700 bg-emerald-50 p-2 rounded border border-emerald-200 font-medium">
+                    ✓ Laporan masalah berhasil diteruskan ke Branch Admin.
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -416,21 +481,74 @@ export default function TechnicalApp() {
         {tab === 'laporan' && (
           <div className="max-w-3xl mx-auto bg-white border border-slate-200 rounded-lg p-6 shadow-xs flex flex-col gap-4">
             <p className="font-display text-xl text-slate-900 mb-1">Laporan Kerja &amp; Log Perawatan</p>
-            <p className="text-xs text-slate-500 mb-3">Dokumentasi hasil inspeksi rutin dan tindak lanjut perbaikan teknis.</p>
+            <p className="text-xs text-slate-500 mb-3">Klik dokumen untuk melihat rincian formulir inspeksi teknis.</p>
 
             <div className="divide-y divide-slate-100 text-xs">
               {[
-                { label: 'Laporan Harian Teknisi: 4 Nov 2026', status: 'Draft (Belum Dikirim)', date: 'Hari ini, 15:00' },
-                { label: 'Kalibrasi Sensor Getaran: Roller Coaster Alpha', status: 'Terkirim', date: '3 Nov 2026, 17:30' },
-                { label: 'Inspeksi Berkala Motor Hidrolik: Bianglala', status: 'Terkirim', date: '1 Nov 2026, 16:45' },
-                { label: 'Laporan Mingguan: Oktober Minggu ke-4', status: 'Disetujui Branch Admin', date: '30 Okt 2026, 18:00' },
+                { 
+                  id: 'RPT-001', 
+                  label: 'Laporan Harian Teknisi: 4 Nov 2026', 
+                  status: 'Draft (Belum Dikirim)', 
+                  date: 'Hari ini, 15:00',
+                  wahana: 'Roller Coaster Alpha & Bianglala',
+                  inspector: 'Rudi Hartono (T-001)',
+                  checklist: [
+                    { item: 'Sistem Kelistrikan & Panel Daya', pass: true },
+                    { item: 'Tekanan Hidrolik Pengereman', pass: true },
+                    { item: 'Sensor Getaran Bearing Utama', pass: false, note: 'Tercatat 5.1g saat putaran maks' },
+                    { item: 'Sabuk Pengaman & Harness Kursi', pass: true }
+                  ]
+                },
+                { 
+                  id: 'RPT-002', 
+                  label: 'Kalibrasi Sensor Getaran: Roller Coaster Alpha', 
+                  status: 'Terkirim', 
+                  date: '3 Nov 2026, 17:30',
+                  wahana: 'Roller Coaster Alpha',
+                  inspector: 'Rudi Hartono & Tim IoT',
+                  checklist: [
+                    { item: 'Kalibrasi Titik Nol Akselerometer', pass: true },
+                    { item: 'Sinkronisasi Frekuensi MQTT 50Hz', pass: true },
+                    { item: 'Uji Toleransi Beban Simulasi', pass: true }
+                  ]
+                },
+                { 
+                  id: 'RPT-003', 
+                  label: 'Inspeksi Berkala Motor Hidrolik: Bianglala', 
+                  status: 'Terkirim', 
+                  date: '1 Nov 2026, 16:45',
+                  wahana: 'Bianglala Raksasa',
+                  inspector: 'Bowo Nugroho (T-002)',
+                  checklist: [
+                    { item: 'Level Oli Hidrolik ISO VG 46', pass: true },
+                    { item: 'Pemeriksaan Pompa Utama', pass: true },
+                    { item: 'Seal Piston Pintu Gondola', pass: true }
+                  ]
+                },
+                { 
+                  id: 'RPT-004', 
+                  label: 'Laporan Mingguan: Oktober Minggu ke-4', 
+                  status: 'Disetujui Branch Admin', 
+                  date: '30 Okt 2026, 18:00',
+                  wahana: 'Semua Wahana Ekstrem',
+                  inspector: 'Rudi Hartono (Lead Tech)',
+                  checklist: [
+                    { item: 'Rekapitulasi 24 Jam Uptime', pass: true },
+                    { item: 'Ketersediaan Suku Cadang Kritis', pass: true },
+                    { item: 'Simulasi Sistem Evakuasi Manual', pass: true }
+                  ]
+                },
               ].map((r, i) => (
-                <div key={i} className="py-3.5 flex justify-between items-center hover:bg-slate-50 px-2 rounded cursor-pointer">
+                <div
+                  key={i}
+                  onClick={() => setSelectedReportDoc(r)}
+                  className="py-3.5 flex justify-between items-center hover:bg-slate-50 px-2 rounded cursor-pointer transition-colors"
+                >
                   <div className="flex items-center gap-3">
-                    <FileText size={18} className="text-slate-400" />
+                    <FileText size={18} className="text-teal-600" />
                     <div>
                       <p className="font-semibold text-slate-800 text-sm">{r.label}</p>
-                      <p className="text-slate-400 mt-0.5">{r.date}</p>
+                      <p className="text-slate-400 mt-0.5">{r.date} • {r.wahana}</p>
                     </div>
                   </div>
                   <span className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
@@ -465,12 +583,16 @@ export default function TechnicalApp() {
 
             <div className="divide-y divide-slate-100 text-xs mt-3">
               {[
-                { title: 'Wahana Penugasan', desc: 'Roller Coaster Alpha, Drop Tower Vertigo' },
-                { title: 'Jadwal Shift & Piket', desc: 'Senin - Jumat (08.00 - 17.00 WIB)' },
-                { title: 'SOP Penanganan Anomali Sensor', desc: 'Prosedur eskalasi otomatis 5 menit' },
-                { title: 'Log Riwayat Penanganan', desc: '48 insiden terselesaikan bulan ini' },
-              ].map((item, idx) => (
-                <div key={idx} className="py-3.5 flex justify-between items-center hover:bg-slate-50 px-2 rounded cursor-pointer">
+                { id: 'rides',    title: 'Wahana Penugasan', desc: 'Roller Coaster Alpha, Drop Tower Vertigo' },
+                { id: 'schedule', title: 'Jadwal Shift & Piket', desc: 'Senin - Jumat (08.00 - 17.00 WIB)' },
+                { id: 'sop',      title: 'SOP Penanganan Anomali Sensor', desc: 'Prosedur eskalasi otomatis 5 menit' },
+                { id: 'history',  title: 'Log Riwayat Penanganan', desc: '48 insiden terselesaikan bulan ini' },
+              ].map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => setSelectedProfileModal(item.id)}
+                  className="py-3.5 flex justify-between items-center hover:bg-slate-50 px-2 rounded cursor-pointer transition-colors"
+                >
                   <div>
                     <p className="font-semibold text-slate-800 text-sm">{item.title}</p>
                     <p className="text-slate-500 mt-0.5">{item.desc}</p>
@@ -497,6 +619,145 @@ export default function TechnicalApp() {
           </button>
         ))}
       </nav>
+
+      {/* Modal: Report Inspection Detail */}
+      {selectedReportDoc && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-lg p-6 shadow-2xl flex flex-col gap-4">
+            <div className="flex justify-between items-start pb-3 border-b border-slate-100">
+              <div>
+                <span className="text-xs font-mono font-bold text-teal-600">{selectedReportDoc.id}</span>
+                <h3 className="font-display text-xl text-slate-900 mt-0.5">{selectedReportDoc.label}</h3>
+                <p className="text-xs text-slate-500">{selectedReportDoc.date} • Inspektor: {selectedReportDoc.inspector}</p>
+              </div>
+              <button onClick={() => setSelectedReportDoc(null)} className="text-slate-400 hover:text-slate-700">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="bg-slate-50 p-3 rounded border border-slate-100 text-xs">
+              <p className="font-semibold text-slate-700 mb-2">Checklist Inspeksi Keselamatan:</p>
+              <div className="space-y-2">
+                {selectedReportDoc.checklist.map((c, i) => (
+                  <div key={i} className="flex items-start justify-between">
+                    <div>
+                      <p className="text-slate-800 font-medium">{c.item}</p>
+                      {c.note && <p className="text-[11px] text-red-600 mt-0.5">{c.note}</p>}
+                    </div>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                      c.pass ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                    }`}>
+                      {c.pass ? 'LULUS' : 'PERHATIAN'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex gap-2 justify-end pt-2 border-t border-slate-100">
+              <button
+                onClick={() => setSelectedReportDoc(null)}
+                className="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded"
+              >
+                Tutup
+              </button>
+              <button
+                onClick={() => {
+                  setToastMsg(`Mengunduh berkas laporan: ${selectedReportDoc.id}_inspeksi.pdf...`)
+                  setTimeout(() => {
+                    setToastMsg(`✓ Berkas laporan berhasil diunduh.`)
+                    setTimeout(() => setToastMsg(''), 3000)
+                  }, 1200)
+                  setSelectedReportDoc(null)
+                }}
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded flex items-center gap-1.5 transition-colors"
+              >
+                <Download size={14} /> Unduh PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Profil Details (Wahana, Shift, SOP, Log) */}
+      {selectedProfileModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-md p-6 shadow-2xl flex flex-col gap-4">
+            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+              <h3 className="font-display text-xl text-slate-900">
+                {selectedProfileModal === 'rides' && 'Spesifikasi Wahana Penugasan'}
+                {selectedProfileModal === 'schedule' && 'Jadwal Shift & Rekan Piket'}
+                {selectedProfileModal === 'sop' && 'SOP Penanganan Anomali Sensor'}
+                {selectedProfileModal === 'history' && 'Log 48 Insiden Bulan Ini'}
+              </h3>
+              <button onClick={() => setSelectedProfileModal(null)} className="text-slate-400 hover:text-slate-700">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="text-xs text-slate-600 max-h-72 overflow-y-auto space-y-3">
+              {selectedProfileModal === 'rides' && (
+                <>
+                  <div className="p-3 bg-slate-50 rounded border border-slate-100">
+                    <p className="font-semibold text-slate-800 text-sm">Roller Coaster Alpha</p>
+                    <p className="text-slate-500 mt-1">Produsen: Vekoma Rides • Kecepatan Maks: 85 km/jam • Panjang Lintasan: 680 m • Batas Getaran: 4.0g</p>
+                  </div>
+                  <div className="p-3 bg-slate-50 rounded border border-slate-100">
+                    <p className="font-semibold text-slate-800 text-sm">Drop Tower Vertigo</p>
+                    <p className="text-slate-500 mt-1">Tinggi Menara: 45 m • Sistem Rem: Magnetik Eddy Current • Batas Suhu Rem: 50°C</p>
+                  </div>
+                </>
+              )}
+
+              {selectedProfileModal === 'schedule' && (
+                <div className="space-y-2">
+                  <p><strong>Pekan Berjalan:</strong> 3 - 7 November 2026</p>
+                  <div className="p-2.5 bg-teal-50 text-teal-800 rounded border border-teal-200">
+                    <p className="font-semibold">Senin - Jumat: Shift Pagi (08.00 - 17.00 WIB)</p>
+                    <p className="text-[11px] mt-0.5">Rekan Satu Shift: Bowo Nugroho (Teknisi 2) &amp; Dewi Wulandari (Operator)</p>
+                  </div>
+                  <p className="text-slate-500 text-[11px]">Waktu siaga on-call darurat malam hari: Rabu &amp; Jumat.</p>
+                </div>
+              )}
+
+              {selectedProfileModal === 'sop' && (
+                <ol className="list-decimal list-inside space-y-2 leading-relaxed">
+                  <li><strong>Notifikasi Diterima:</strong> Akui alert dalam waktu kurang dari 3 menit melalui aplikasi.</li>
+                  <li><strong>Verifikasi Kamera:</strong> Cek live CCTV wahana sebelum menuju lokasi kejadian.</li>
+                  <li><strong>Inspeksi Fisik:</strong> Bawa multimeter dan toolkit inspeksi bantalan bearing.</li>
+                  <li><strong>Ubah Status:</strong> Perbarui status menjadi Dalam Proses saat berada di titik wahana.</li>
+                  <li><strong>Penyelesaian:</strong> Masukkan catatan penanganan dan unggah foto bukti sebelum menutup alert.</li>
+                </ol>
+              )}
+
+              {selectedProfileModal === 'history' && (
+                <div className="space-y-1.5">
+                  <p className="text-slate-500">Ringkasan insiden yang ditangani oleh Rudi Hartono:</p>
+                  <div className="p-2 bg-slate-50 rounded flex justify-between">
+                    <span>AL-001 (Roller Coaster Alpha)</span>
+                    <span className="font-semibold text-teal-700">Dalam Penanganan</span>
+                  </div>
+                  <div className="p-2 bg-slate-50 rounded flex justify-between">
+                    <span>AL-005 (Drop Tower Vertigo)</span>
+                    <span className="font-semibold text-slate-500">Selesai (09:55)</span>
+                  </div>
+                  <div className="p-2 bg-slate-50 rounded flex justify-between">
+                    <span>AL-012 (Bianglala Motor Roda)</span>
+                    <span className="font-semibold text-slate-500">Selesai (Kemarin)</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => setSelectedProfileModal(null)}
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2.5 rounded transition-colors"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

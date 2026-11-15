@@ -29,11 +29,19 @@ export default function ExpansionPage() {
   const [deskripsi, setDeskripsi] = useState('')
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
+  const [historyList, setHistoryList] = useState([
+    { title: 'Perbaikan Sistem Drainase Area Air', date: '15 Sep 2026', status: 'Disetujui', color: 'teal' },
+    { title: 'Penambahan Kapasitas Parkir Barat', date: '2 Jul 2026', status: 'Dalam Telaah', color: 'slate' },
+  ])
 
   function handleSubmit() {
     if (!judul.trim()) { setError('Judul proposal tidak boleh kosong.'); return }
     setError('')
     setSuccess(true)
+    setHistoryList(prev => [
+      { title: judul, date: 'Hari ini', status: 'Menunggu Telaah Dinas', color: 'slate' },
+      ...prev
+    ])
     setTimeout(() => setSuccess(false), 4000)
     setJudul(''); setBiaya(''); setDeskripsi('')
   }
@@ -158,10 +166,7 @@ export default function ExpansionPage() {
                 <div className="bg-white border border-slate-200 rounded-md p-5">
                   <p className="text-sm font-semibold text-slate-900 mb-3">Riwayat Proposal</p>
                   <div className="flex flex-col gap-3 text-sm">
-                    {[
-                      { title: 'Perbaikan Sistem Drainase Area Air', date: '15 Sep 2026', status: 'Disetujui', color: 'teal' },
-                      { title: 'Penambahan Kapasitas Parkir Barat', date: '2 Jul 2026', status: 'Dalam Telaah', color: 'slate' },
-                    ].map((p, i) => (
+                    {historyList.map((p, i) => (
                       <div key={i} className={`pl-3 border-l-2 ${p.color === 'teal' ? 'border-teal-500' : 'border-slate-200'}`}>
                         <p className="font-medium text-slate-800">{p.title}</p>
                         <p className="text-xs text-slate-400 mt-0.5">{p.date}</p>

@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Shield, QrCode, Bell, MapPin, ChevronRight, Star, Clock, AlertTriangle, PhoneCall, CheckCircle2, User } from 'lucide-react'
+import { Shield, QrCode, Bell, MapPin, ChevronRight, Star, Clock, AlertTriangle, PhoneCall, CheckCircle2, User, X, Camera, Ticket, History, MessageSquare, Settings, HelpCircle, Check } from 'lucide-react'
 import AnimatedBar from '../components/AnimatedBar'
 
-const destinations = [
+const initialDestinations = [
   { id: 1, name: 'Jatim Park 2',      occ: 72, level: 'Ramai',   img: `${import.meta.env.BASE_URL}images/jatimpark2.jpg`,       jam: '08.30 - 16.30', zone: 'Zona Wahana Utama' },
   { id: 2, name: 'BNS',               occ: 45, level: 'Sedang',  img: `${import.meta.env.BASE_URL}images/bns.jpg`,               jam: '15.00 - 23.00', zone: 'Area Lampion & Wahana' },
   { id: 3, name: 'Selecta',           occ: 28, level: 'Lengang', img: `${import.meta.env.BASE_URL}images/selecta.jpg`,           jam: '07.00 - 17.00', zone: 'Taman Bunga & Kolam' },
@@ -70,7 +70,23 @@ export default function VisitorApp() {
   const [rating, setRating] = useState(5)
   const [tipe, setTipe] = useState('Saran')
   const [komen, setKomen] = useState('')
+  const [targetRide, setTargetRide] = useState('Jatim Park 2: Roller Coaster Alpha')
   const [submitted, setSubmitted] = useState(false)
+  const [userFeedbackList, setUserFeedbackList] = useState([
+    { dest: 'Jatim Park 2: Roller Coaster Alpha', rating: 5, tipe: 'Saran', text: 'Pengalaman sangat seru, antrian tertib dengan panduan sensor.', date: 'Hari ini, 13:40' },
+    { dest: 'Museum Angkut: Gangster Town', rating: 4, tipe: 'Pujian', text: 'Koleksi mobil klasik sangat terawat dan edukatif.', date: '12 Okt 2026' }
+  ])
+
+  // Modals state
+  const [qrModalOpen, setQrModalOpen] = useState(false)
+  const [activeProfileModal, setActiveProfileModal] = useState(null) // 'ticket' | 'history' | 'feedback' | 'settings' | 'help'
+  const [currentLocation, setCurrentLocation] = useState('Zona Wahana Utama, Jatim Park 2')
+  const [callToast, setCallToast] = useState('')
+
+  // Settings toggles
+  const [settingNotif, setSettingNotif] = useState(true)
+  const [settingGPS, setSettingGPS] = useState(true)
+  const [settingCrowdAlert, setSettingCrowdAlert] = useState(true)
 
   const navTabs = [
     { id: 'beranda',   label: 'Beranda' },
@@ -79,8 +95,43 @@ export default function VisitorApp() {
     { id: 'profil',    label: 'Profil Pengunjung' },
   ]
 
+  function handleSelectDestinationForReview(destName) {
+    setTargetRide(`${destName}: Wahana Utama`)
+    setTab('destinasi')
+    setSubmitted(false)
+  }
+
+  function handleSimulateQRScan() {
+    setTimeout(() => {
+      setCurrentLocation('Jatim Park 2 • Zona Wahana Air & Bianglala')
+      setQrModalOpen(false)
+    }, 600)
+  }
+
+  function handleSubmitReview() {
+    if (!komen) return
+    setUserFeedbackList(prev => [
+      { dest: targetRide, rating, tipe, text: komen, date: 'Baru saja' },
+      ...prev
+    ])
+    setSubmitted(true)
+  }
+
+  function triggerCall(number, name) {
+    setCallToast(`Menghubungkan panggilan ke ${name} (${number})...`)
+    setTimeout(() => setCallToast(''), 3000)
+  }
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 flex flex-col">
+      {/* Toast Notification */}
+      {callToast && (
+        <div className="fixed top-4 right-4 z-50 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-xl text-xs font-medium flex items-center gap-2 border border-slate-700 animate-in fade-in duration-200">
+          <PhoneCall size={14} className="text-teal-400 animate-pulse" />
+          <span>{callToast}</span>
+        </div>
+      )}
+
       {/* Top Header: Responsive for both mobile and desktop */}
       <header className="bg-teal-700 text-white sticky top-0 z-40 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -91,7 +142,7 @@ export default function VisitorApp() {
               </div>
               <div>
                 <p className="font-semibold text-sm sm:text-base tracking-tight leading-tight">Wisata Batu • Portal Pengunjung</p>
-                <p className="text-xs text-teal-200">Jatim Park 2 • Zona Wahana Utama</p>
+                <p className="text-xs text-teal-200">{currentLocation}</p>
               </div>
             </div>
 
@@ -122,7 +173,10 @@ export default function VisitorApp() {
                 <Bell size={16} />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-400 rounded-full" />
               </button>
-              <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-teal-600">
+              <button
+                onClick={() => setTab('profil')}
+                className="hidden sm:flex items-center gap-2 pl-2 border-l border-teal-600 hover:opacity-90 transition-opacity"
+              >
                 <div className="w-8 h-8 rounded-full bg-teal-800 text-white flex items-center justify-center font-bold text-xs">
                   AP
                 </div>
@@ -130,7 +184,7 @@ export default function VisitorApp() {
                   <p className="font-medium text-white leading-none">Andi Pratama</p>
                   <p className="text-teal-200 text-[10px] mt-0.5">Pengunjung Umum</p>
                 </div>
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -150,10 +204,13 @@ export default function VisitorApp() {
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-3">
-                <div className="bg-slate-50 px-3 py-2 rounded border border-slate-200 text-xs text-slate-600 flex items-center gap-1.5">
+                <button
+                  onClick={() => setQrModalOpen(true)}
+                  className="bg-slate-50 hover:bg-slate-100 px-3 py-2 rounded border border-slate-200 text-xs text-slate-700 flex items-center gap-1.5 transition-colors"
+                >
                   <MapPin size={14} className="text-teal-600" />
-                  <span>Zona Wahana Utama</span>
-                </div>
+                  <span>{currentLocation}</span>
+                </button>
                 <button 
                   onClick={() => setTab('darurat')}
                   className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-4 py-2.5 rounded flex items-center gap-2 transition-colors shadow-xs"
@@ -174,8 +231,12 @@ export default function VisitorApp() {
                     <span className="text-xs text-teal-600 font-medium">Diperbarui real-time</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {destinations.slice(0, 3).map((d) => (
-                      <div key={d.id} className="group rounded-md relative overflow-hidden bg-slate-900 border border-slate-200 flex flex-col h-40">
+                    {initialDestinations.slice(0, 3).map((d) => (
+                      <div
+                        key={d.id}
+                        onClick={() => handleSelectDestinationForReview(d.name)}
+                        className="group rounded-md relative overflow-hidden bg-slate-900 border border-slate-200 flex flex-col h-40 cursor-pointer shadow-xs hover:border-teal-400 transition-all"
+                      >
                         <img 
                           src={d.img} 
                           alt={d.name} 
@@ -206,8 +267,12 @@ export default function VisitorApp() {
                     <span className="text-xs text-slate-400">Sensor Smart Gate</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {destinations.map((d) => (
-                      <div key={d.id} className="p-3 bg-slate-50 rounded-md border border-slate-100 flex flex-col justify-between">
+                    {initialDestinations.map((d) => (
+                      <div
+                        key={d.id}
+                        onClick={() => handleSelectDestinationForReview(d.name)}
+                        className="p-3 bg-slate-50 rounded-md border border-slate-100 flex flex-col justify-between cursor-pointer hover:bg-slate-100/80 transition-colors"
+                      >
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
                             <img src={d.img} alt={d.name} className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
@@ -279,7 +344,10 @@ export default function VisitorApp() {
                       <p className="text-[11px] text-teal-700">Perbarui posisi wahana Anda</p>
                     </div>
                   </div>
-                  <button className="bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold px-3 py-1.5 rounded transition-colors">
+                  <button 
+                    onClick={() => setQrModalOpen(true)}
+                    className="bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold px-3 py-1.5 rounded transition-colors"
+                  >
                     Pindai
                   </button>
                 </div>
@@ -298,20 +366,32 @@ export default function VisitorApp() {
                 <p className="text-xs text-slate-500 mb-4">Pilih wahana atau fasilitas untuk memberikan ulasan dan rating langsung.</p>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {destinations.map(d => (
-                    <div key={d.id} className="border border-slate-200 rounded-md overflow-hidden bg-white hover:border-teal-400 transition-colors">
-                      <div className="h-32 bg-slate-800 relative">
-                        <img src={d.img} alt={d.name} className="w-full h-full object-cover" />
-                        <span className={`absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${levelColor[d.level]}`}>
-                          {d.level} ({d.occ}%)
-                        </span>
+                  {initialDestinations.map(d => (
+                    <div
+                      key={d.id}
+                      className="border border-slate-200 rounded-md overflow-hidden bg-white hover:border-teal-400 transition-colors flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="h-32 bg-slate-800 relative">
+                          <img src={d.img} alt={d.name} className="w-full h-full object-cover" />
+                          <span className={`absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${levelColor[d.level]}`}>
+                            {d.level} ({d.occ}%)
+                          </span>
+                        </div>
+                        <div className="p-3">
+                          <p className="font-semibold text-sm text-slate-900">{d.name}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">{d.zone}</p>
+                        </div>
                       </div>
-                      <div className="p-3">
-                        <p className="font-semibold text-sm text-slate-900">{d.name}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">{d.zone}</p>
-                        <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100 text-xs">
+                      <div className="px-3 pb-3">
+                        <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
                           <span className="text-slate-400">{d.jam}</span>
-                          <span className="text-teal-600 font-semibold cursor-pointer">Beri Masukan →</span>
+                          <button
+                            onClick={() => handleSelectDestinationForReview(d.name)}
+                            className="text-teal-600 font-semibold hover:underline"
+                          >
+                            Beri Masukan →
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -323,7 +403,7 @@ export default function VisitorApp() {
             {/* Right Col: Rating Form */}
             <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-xs h-fit">
               <p className="font-display text-lg text-slate-900 mb-1">Form Masukan Pengunjung</p>
-              <p className="text-xs text-slate-500 mb-4">Jatim Park 2: Roller Coaster Alpha</p>
+              <p className="text-xs text-teal-700 font-medium mb-4">{targetRide}</p>
 
               {!submitted ? (
                 <div className="flex flex-col gap-4">
@@ -377,8 +457,8 @@ export default function VisitorApp() {
                   </div>
 
                   <button
-                    onClick={() => { if (komen) setSubmitted(true) }}
-                    className="w-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-2.5 rounded transition-colors"
+                    onClick={handleSubmitReview}
+                    className="w-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-2.5 rounded transition-colors shadow-xs"
                   >
                     Kirim Masukan Pengunjung
                   </button>
@@ -404,7 +484,7 @@ export default function VisitorApp() {
           </div>
         )}
 
-        {/* PUSAT BANTUAN & KEAMANAN TAB (NO MEDICAL EMERGENCY) */}
+        {/* PUSAT BANTUAN & KEAMANAN TAB */}
         {tab === 'darurat' && (
           <div className="max-w-2xl mx-auto flex flex-col gap-6">
             <div className="bg-red-50 border border-red-200 rounded-lg p-5">
@@ -413,7 +493,7 @@ export default function VisitorApp() {
                 <div>
                   <p className="text-sm font-semibold text-red-900">Pusat Pelaporan Gangguan Keamanan</p>
                   <p className="text-xs text-red-700 mt-1 leading-relaxed">
-                    Fitur ini terhubung langsung ke pos keamanan destinasi dan pengawas CCTV. Gunakan hanya saat terjadi insiden mendesak.
+                    Fitur ini terhubung langsung ke pos keamanan destinasi dan pengawas CCTV. Gunakan saat terjadi insiden mendesak di sekitar Anda.
                   </p>
                 </div>
               </div>
@@ -447,7 +527,7 @@ export default function VisitorApp() {
                 <div className="flex items-center gap-3 p-3 bg-slate-50 rounded border border-slate-100">
                   <MapPin size={18} className="text-teal-600 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-slate-800">Zona Wahana Utama, Jatim Park 2</p>
+                    <p className="text-sm font-semibold text-slate-800">{currentLocation}</p>
                     <p className="text-xs text-slate-500">Akurasi GPS ± 5 meter • Terverifikasi Smart Gate</p>
                   </div>
                 </div>
@@ -456,26 +536,35 @@ export default function VisitorApp() {
               <div className="border-t border-slate-100 pt-4">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Kontak Petugas Langsung</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div className="flex items-center gap-2 p-2.5 bg-slate-50 rounded border border-slate-100">
-                    <PhoneCall size={15} className="text-slate-600" />
+                  <button
+                    onClick={() => triggerCall('(0341) 597-777', 'Pos Keamanan Jatim Park 2')}
+                    className="flex items-center gap-2 p-2.5 bg-slate-50 hover:bg-slate-100 rounded border border-slate-100 text-left transition-colors"
+                  >
+                    <PhoneCall size={15} className="text-teal-600 flex-shrink-0" />
                     <div>
                       <p className="font-semibold text-slate-800">Pos Keamanan Utama</p>
                       <p className="text-slate-500">(0341) 597-777</p>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 p-2.5 bg-slate-50 rounded border border-slate-100">
-                    <PhoneCall size={15} className="text-slate-600" />
+                  </button>
+                  <button
+                    onClick={() => triggerCall('112', 'Panggilan Darurat Kota Batu')}
+                    className="flex items-center gap-2 p-2.5 bg-slate-50 hover:bg-slate-100 rounded border border-slate-100 text-left transition-colors"
+                  >
+                    <PhoneCall size={15} className="text-teal-600 flex-shrink-0" />
                     <div>
                       <p className="font-semibold text-slate-800">Call Center Pariwisata Batu</p>
                       <p className="text-slate-500">112 / (0341) 591-111</p>
                     </div>
-                  </div>
+                  </button>
                 </div>
               </div>
 
               <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row gap-3 items-center justify-between">
                 <p className="text-xs text-slate-500">Belum check-in? Pindai QR di tiang wahana untuk kalibrasi lokasi.</p>
-                <button className="w-full sm:w-auto px-4 py-2 border border-teal-600 text-teal-600 hover:bg-teal-50 rounded text-xs font-semibold flex items-center justify-center gap-2">
+                <button 
+                  onClick={() => setQrModalOpen(true)}
+                  className="w-full sm:w-auto px-4 py-2 border border-teal-600 text-teal-600 hover:bg-teal-50 rounded text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+                >
                   <QrCode size={14} /> Pindai QR
                 </button>
               </div>
@@ -492,7 +581,7 @@ export default function VisitorApp() {
               </div>
               <div>
                 <p className="font-display text-xl text-slate-900">Andi Pratama</p>
-                <p className="text-xs text-slate-500">Akun Pengunjung Terverifikasi</p>
+                <p className="text-xs text-slate-500">Akun Pengunjung Terverifikasi • ID: WB-2026-8849</p>
                 <span className="inline-block mt-1 text-[10px] bg-teal-50 text-teal-700 font-semibold px-2 py-0.5 rounded border border-teal-200">
                   Status: Sedang di Lokasi
                 </span>
@@ -501,20 +590,32 @@ export default function VisitorApp() {
 
             <div className="divide-y divide-slate-100 text-xs">
               {[
-                { title: 'Destinasi Aktif', desc: 'Jatim Park 2 • Tiket Reguler Terpindai' },
-                { title: 'Riwayat Kunjungan', desc: '3 Kunjungan dalam 6 bulan terakhir' },
-                { title: 'Ulasan & Feedback Terkirim', desc: '1 ulasan dikirim hari ini' },
-                { title: 'Pengaturan Notifikasi & Lokasi', desc: 'Akses sensor GPS aktif' },
-                { title: 'Pusat Bantuan & Kebijakan Privasi', desc: 'Panduan operasional dan privasi data' },
-              ].map((item, idx) => (
-                <div key={idx} className="py-3.5 flex justify-between items-center hover:bg-slate-50 px-2 rounded cursor-pointer">
-                  <div>
-                    <p className="font-semibold text-slate-800 text-sm">{item.title}</p>
-                    <p className="text-slate-500 mt-0.5">{item.desc}</p>
+                { id: 'ticket',   title: 'Destinasi Aktif', desc: 'Jatim Park 2 • Tiket Reguler Terpindai', icon: Ticket },
+                { id: 'history',  title: 'Riwayat Kunjungan', desc: '3 Kunjungan dalam 6 bulan terakhir', icon: History },
+                { id: 'feedback', title: 'Ulasan & Feedback Terkirim', desc: `${userFeedbackList.length} masukan tersimpan di profil`, icon: MessageSquare },
+                { id: 'settings', title: 'Pengaturan Notifikasi & Lokasi', desc: 'Kelola izin akses sensor dan alert', icon: Settings },
+                { id: 'help',     title: 'Pusat Bantuan & Kebijakan Privasi', desc: 'Panduan operasional dan SOP keselamatan', icon: HelpCircle },
+              ].map((item) => {
+                const Icon = item.icon
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => setActiveProfileModal(item.id)}
+                    className="py-3.5 flex justify-between items-center hover:bg-slate-50 px-2 rounded cursor-pointer transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center flex-shrink-0">
+                        <Icon size={16} />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-slate-800 text-sm">{item.title}</p>
+                        <p className="text-slate-500 mt-0.5">{item.desc}</p>
+                      </div>
+                    </div>
+                    <ChevronRight size={16} className="text-slate-400" />
                   </div>
-                  <ChevronRight size={16} className="text-slate-400" />
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         )}
@@ -536,7 +637,263 @@ export default function VisitorApp() {
         ))}
       </nav>
 
+      {/* SOS Modal */}
       {sos && <SOSModal type={sos} onClose={() => setSos(null)} />}
+
+      {/* QR Code Scanner Simulation Modal */}
+      {qrModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-sm p-6 shadow-2xl relative flex flex-col gap-4 text-center">
+            <button
+              onClick={() => setQrModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+              aria-label="Tutup pemindai"
+            >
+              <X size={20} />
+            </button>
+
+            <div>
+              <p className="font-display text-lg text-slate-900">Pindai QR Lokasi Wahana</p>
+              <p className="text-xs text-slate-500 mt-0.5">Arahkan kamera ke kode QR di tiang zona wahana</p>
+            </div>
+
+            {/* Viewfinder Simulator */}
+            <div className="w-56 h-56 mx-auto bg-slate-900 rounded-lg relative overflow-hidden flex items-center justify-center border-2 border-teal-500 shadow-inner">
+              <Camera size={36} className="text-white/40" />
+              {/* Scanline animation */}
+              <div className="absolute left-0 right-0 h-1 bg-teal-400 shadow-[0_0_8px_#2dd4bf] animate-bounce top-1/3" />
+              <div className="absolute inset-4 border border-dashed border-white/40 rounded pointer-events-none" />
+            </div>
+
+            <p className="text-xs text-slate-500">Mendeteksi koordinat tiang zona wahana...</p>
+
+            <button
+              onClick={handleSimulateQRScan}
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-2.5 rounded transition-colors shadow-xs"
+            >
+              Simulasi Pindai Berhasil
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Destinasi Aktif / Tiket Digital */}
+      {activeProfileModal === 'ticket' && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-md p-6 shadow-2xl flex flex-col gap-4">
+            <div className="flex justify-between items-start pb-3 border-b border-slate-100">
+              <div>
+                <p className="text-xs text-teal-600 uppercase tracking-widest font-bold">E-TIKET AKTIF</p>
+                <h3 className="font-display text-xl text-slate-900 mt-0.5">Jatim Park 2 (Reguler Terusan)</h3>
+              </div>
+              <button onClick={() => setActiveProfileModal(null)} className="text-slate-400 hover:text-slate-700">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-center flex flex-col items-center gap-3">
+              <div className="w-40 h-40 bg-white border border-slate-200 rounded p-2 flex items-center justify-center shadow-xs">
+                {/* SVG Barcode QR */}
+                <div className="w-full h-full flex flex-col justify-between p-2">
+                  <div className="grid grid-cols-4 gap-1.5 h-full">
+                    {Array.from({ length: 16 }).map((_, i) => (
+                      <div key={i} className={`rounded-xs ${i % 3 === 0 || i % 5 === 0 ? 'bg-slate-900' : 'bg-slate-200'}`} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div>
+                <p className="font-mono font-bold text-sm text-slate-900 tracking-wider">#TKT-JP2-884920</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Berlaku hingga: Hari ini, 16.30 WIB</p>
+              </div>
+            </div>
+
+            <div className="text-xs text-slate-600 space-y-1.5 border-t border-slate-100 pt-3">
+              <p>Pemegang Tiket: <strong className="text-slate-800">Andi Pratama (1 Orang)</strong></p>
+              <p>Status Smart Gate: <strong className="text-teal-600">Check-in Terverifikasi</strong></p>
+              <p>Fasilitas Termasuk: Batu Secret Zoo, Museum Satwa, Sweet Paradise</p>
+            </div>
+
+            <button
+              onClick={() => setActiveProfileModal(null)}
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2.5 rounded transition-colors"
+            >
+              Tutup E-Tiket
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Riwayat Kunjungan */}
+      {activeProfileModal === 'history' && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-md p-6 shadow-2xl flex flex-col gap-4">
+            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+              <h3 className="font-display text-xl text-slate-900">Riwayat Kunjungan Wisata</h3>
+              <button onClick={() => setActiveProfileModal(null)} className="text-slate-400 hover:text-slate-700">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="divide-y divide-slate-100 text-xs max-h-72 overflow-y-auto">
+              {[
+                { name: 'Jatim Park 2', date: 'Hari ini, 09:15 WIB', status: 'Selesai Tiket', price: 'Rp 140.000' },
+                { name: 'Selecta Taman Bunga', date: '18 Okt 2026', status: 'Selesai Tiket', price: 'Rp 50.000' },
+                { name: 'Batu Night Spectacular (BNS)', date: '2 Okt 2026', status: 'Selesai Tiket', price: 'Rp 110.000' },
+              ].map((h, i) => (
+                <div key={i} className="py-3 flex justify-between items-center">
+                  <div>
+                    <p className="font-semibold text-slate-800 text-sm">{h.name}</p>
+                    <p className="text-slate-400 mt-0.5">{h.date} • {h.status}</p>
+                  </div>
+                  <span className="font-semibold text-slate-900">{h.price}</span>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setActiveProfileModal(null)}
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-2.5 rounded transition-colors"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Riwayat Ulasan & Masukan */}
+      {activeProfileModal === 'feedback' && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-md p-6 shadow-2xl flex flex-col gap-4">
+            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+              <h3 className="font-display text-xl text-slate-900">Ulasan &amp; Masukan Anda</h3>
+              <button onClick={() => setActiveProfileModal(null)} className="text-slate-400 hover:text-slate-700">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="divide-y divide-slate-100 text-xs max-h-72 overflow-y-auto">
+              {userFeedbackList.map((f, i) => (
+                <div key={i} className="py-3 flex flex-col gap-1">
+                  <div className="flex justify-between items-center">
+                    <p className="font-semibold text-slate-800">{f.dest}</p>
+                    <span className="text-[10px] text-slate-400">{f.date}</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-amber-400 text-xs">
+                    {'★'.repeat(f.rating)}
+                    <span className="text-[10px] text-teal-600 font-semibold bg-teal-50 px-1.5 py-0.2 rounded ml-1">{f.tipe}</span>
+                  </div>
+                  <p className="text-slate-600 mt-1 leading-relaxed">{f.text}</p>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setActiveProfileModal(null)}
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-2.5 rounded transition-colors"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Pengaturan Notifikasi & Lokasi */}
+      {activeProfileModal === 'settings' && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-md p-6 shadow-2xl flex flex-col gap-5">
+            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+              <h3 className="font-display text-xl text-slate-900">Pengaturan Aplikasi</h3>
+              <button onClick={() => setActiveProfileModal(null)} className="text-slate-400 hover:text-slate-700">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-4 text-xs">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-semibold text-slate-800 text-sm">Notifikasi Push</p>
+                  <p className="text-slate-500">Menerima info wahana dan status antrian</p>
+                </div>
+                <button
+                  onClick={() => setSettingNotif(!settingNotif)}
+                  className={`w-11 h-6 rounded-full transition-colors relative ${settingNotif ? 'bg-teal-600' : 'bg-slate-300'}`}
+                >
+                  <span className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${settingNotif ? 'left-6' : 'left-1'}`} />
+                </button>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-semibold text-slate-800 text-sm">Akurasi GPS &amp; Sensor</p>
+                  <p className="text-slate-500">Deteksi titik wahana otomatis di area destinasi</p>
+                </div>
+                <button
+                  onClick={() => setSettingGPS(!settingGPS)}
+                  className={`w-11 h-6 rounded-full transition-colors relative ${settingGPS ? 'bg-teal-600' : 'bg-slate-300'}`}
+                >
+                  <span className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${settingGPS ? 'left-6' : 'left-1'}`} />
+                </button>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-semibold text-slate-800 text-sm">Peringatan Kepadatan Tinggi</p>
+                  <p className="text-slate-500">Pemberitahuan bila wahana melebihi kuota 80%</p>
+                </div>
+                <button
+                  onClick={() => setSettingCrowdAlert(!settingCrowdAlert)}
+                  className={`w-11 h-6 rounded-full transition-colors relative ${settingCrowdAlert ? 'bg-teal-600' : 'bg-slate-300'}`}
+                >
+                  <span className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${settingCrowdAlert ? 'left-6' : 'left-1'}`} />
+                </button>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setActiveProfileModal(null)}
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-2.5 rounded transition-colors"
+            >
+              Simpan Pengaturan
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Pusat Bantuan & FAQ */}
+      {activeProfileModal === 'help' && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-md p-6 shadow-2xl flex flex-col gap-4">
+            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+              <h3 className="font-display text-xl text-slate-900">Pusat Bantuan &amp; Panduan</h3>
+              <button onClick={() => setActiveProfileModal(null)} className="text-slate-400 hover:text-slate-700">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="divide-y divide-slate-100 text-xs max-h-72 overflow-y-auto">
+              {[
+                { q: 'Bagaimana cara check-in wahana?', a: 'Pindai kode QR yang terpasang di tiang masuk setiap wahana menggunakan tombol Pindai QR di aplikasi.' },
+                { q: 'Apa yang harus dilakukan saat kehilangan barang?', a: 'Buka menu Pusat Bantuan & Keamanan, lalu tekan tombol Lapor Gangguan Keamanan. Petugas pos terdekat akan menghubungi Anda.' },
+                { q: 'Apakah tiket berlaku untuk re-entry?', a: 'Ya, tiket terusan berlaku keluar-masuk hingga jam operasional destinasi berakhir dengan verifikasi cap smart gate.' },
+                { q: 'Bagaimana cara menghubungi pengelola?', a: 'Hubungi call center pariwisata Batu di nomor 112 atau telepon kantor pos Jatim Park 2 di (0341) 597-777.' }
+              ].map((faq, i) => (
+                <div key={i} className="py-3">
+                  <p className="font-semibold text-slate-800 text-sm mb-1">{faq.q}</p>
+                  <p className="text-slate-600 leading-relaxed">{faq.a}</p>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setActiveProfileModal(null)}
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-2.5 rounded transition-colors"
+            >
+              Tutup Panduan
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
