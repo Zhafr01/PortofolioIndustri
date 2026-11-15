@@ -1,10 +1,10 @@
 /**
- * StatBlock — compact KPI card with accent left-border.
+ * StatBlock: compact KPI card with accent left-border.
  * @param {string}     label
  * @param {string|number} value
- * @param {string}     sub     — small subscript text
- * @param {string}     color   — 'default'|'red'|'amber'|'green'|'teal'
- * @param {ReactNode}  children — optional content below value (e.g. AnimatedBar)
+ * @param {string}     sub     : small subscript text
+ * @param {string}     color   : 'default'|'red'|'amber'|'green'|'teal'
+ * @param {ReactNode}  children : optional content below value (e.g. AnimatedBar)
  */
 export default function StatBlock({ label, value, sub, color = 'default', children }) {
   const accentBorder = {

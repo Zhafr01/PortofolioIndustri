@@ -57,7 +57,7 @@ export default function ExpansionPage() {
                 {/* Score hero */}
                 <div className="bg-slate-900 rounded-md p-6 flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-widest mb-2">Jatim Park 2 — Skor Ekspansi</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-widest mb-2">Jatim Park 2: Skor Ekspansi</p>
                     <p className="font-display text-5xl sm:text-6xl text-teal-400">76.3</p>
                     <p className="text-slate-400 text-sm mt-1">/ 100 poin</p>
                   </div>

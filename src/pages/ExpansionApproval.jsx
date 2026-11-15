@@ -16,7 +16,7 @@ const factors = [
 
 const incidents = [
   { tanggal:'28 Okt 2026', tipe:'Teknis', severity:'Rendah',  status:'Selesai' },
-  { tanggal:'15 Okt 2026', tipe:'Medis',  severity:'Rendah',  status:'Selesai' },
+  { tanggal:'15 Okt 2026', tipe:'Keamanan', severity:'Rendah', status:'Selesai' },
   { tanggal:'2 Okt 2026',  tipe:'Teknis', severity:'Sedang',  status:'Selesai' },
 ]
 
@@ -44,7 +44,7 @@ export default function ExpansionApproval() {
                 <div className="bg-white border border-slate-200 rounded-md p-6">
                   <p className="text-xs text-teal-600 uppercase tracking-widest font-semibold mb-2">PRO-2026-047</p>
                   <h1 className="font-display text-2xl text-slate-900 mb-1">Pembangunan Wahana Ekstrem Baru</h1>
-                  <p className="text-slate-500 text-sm mb-5">Jatim Park 3 — Diajukan: 28 Oktober 2026 oleh Branch Admin</p>
+                  <p className="text-slate-500 text-sm mb-5">Jatim Park 3 • Diajukan: 28 Oktober 2026 oleh Branch Admin</p>
 
                   <div className="flex flex-col gap-4 text-sm text-slate-700 leading-relaxed">
                     <p>Jatim Park 3 mengajukan permohonan dukungan pembangunan satu unit wahana ekstrem kategori roller coaster dengan ketinggian trek 32 meter dan kecepatan maksimum 90 km/jam. Wahana ini direncanakan beroperasi pada Q3 2027 dan dirancang untuk meningkatkan kapasitas kunjungan harian sebesar 320 orang.</p>
@@ -90,7 +90,7 @@ export default function ExpansionApproval() {
                 {/* Score */}
                 <div className="bg-white border border-slate-200 rounded-md p-5">
                   <p className="text-sm font-semibold text-slate-900 mb-1">Analisis Skor Ekspansi</p>
-                  <p className="text-xs text-slate-500 mb-4">Jatim Park 3 — Q4 2026</p>
+                  <p className="text-xs text-slate-500 mb-4">Jatim Park 3 • Q4 2026</p>
                   <div className="flex items-center gap-4 mb-5">
                     <span className="font-display text-4xl sm:text-5xl text-teal-600">86.2</span>
                     <div>

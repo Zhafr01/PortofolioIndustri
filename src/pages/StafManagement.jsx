@@ -7,13 +7,13 @@ import AnimatedBar from '../components/AnimatedBar'
 
 const stafList = [
   { id:'T-001', nama:'Rudi Hartono',    initials:'RH', role:'Teknisi',        zona:'Wahana Ekstrem',    duty:true },
-  { id:'M-001', nama:'Sari Indah',      initials:'SI', role:'Tim Medis',      zona:'Pos Medis Utama',   duty:true },
   { id:'K-001', nama:'Agus Pramono',    initials:'AP', role:'Keamanan',       zona:'Pintu Masuk A',     duty:true },
   { id:'P-003', nama:'Dewi Wulandari',  initials:'DW', role:'Penjaga Wahana', zona:'Roller Coaster',    duty:true },
   { id:'T-002', nama:'Bowo Nugroho',    initials:'BN', role:'Teknisi',        zona:'Zona Air',          duty:false },
   { id:'P-004', nama:'Lestari Murni',   initials:'LM', role:'Penjaga Wahana', zona:'Bianglala Raksasa', duty:true },
   { id:'K-002', nama:'Fajar Hidayat',   initials:'FH', role:'Keamanan',       zona:'Area Parkir',       duty:true },
-  { id:'M-002', nama:'Nanda Rahayu',    initials:'NR', role:'Tim Medis',      zona:'Pos Medis Wahana',  duty:false },
+  { id:'O-001', nama:'Sari Indah',      initials:'SI', role:'Operasional',    zona:'Pusat Informasi',   duty:true },
+  { id:'O-002', nama:'Nanda Rahayu',    initials:'NR', role:'Operasional',    zona:'Area Tiket',        duty:false },
 ]
 
 const zones = [
@@ -22,13 +22,13 @@ const zones = [
   { name:'Wahana Anak',    aktif:3, total:3 },
   { name:'Pintu Masuk',    aktif:3, total:4 },
   { name:'Area Parkir',    aktif:2, total:3 },
-  { name:'Pos Medis',      aktif:2, total:3 },
+  { name:'Pusat Informasi',aktif:2, total:3 },
 ]
 
 const shifts = [
-  { label:'Pagi (07.00–15.00)', count:12, active:true },
-  { label:'Sore (15.00–22.00)', count:6,  active:false },
-  { label:'Malam (22.00–07.00)',count:3,  active:false },
+  { label:'Pagi (07.00 - 15.00)', count:12, active:true },
+  { label:'Sore (15.00 - 22.00)', count:6,  active:false },
+  { label:'Malam (22.00 - 07.00)',count:3,  active:false },
 ]
 
 export default function StafManagement() {
@@ -53,7 +53,7 @@ export default function StafManagement() {
               <StatBlock label="Total Staf"    value="24" sub="Terdaftar" />
               <StatBlock label="Bertugas"      value="18" sub="On duty"       color="green" />
               <StatBlock label="Penjaga Wahana" value="8" sub="Di berbagai zona" />
-              <StatBlock label="Tim Medis"     value="3"  sub="Siaga di pos" />
+              <StatBlock label="Operasional"   value="4"  sub="Siaga di pos" />
               <StatBlock label="Keamanan"      value="4"  sub="Patroli aktif" />
             </div>
 
@@ -69,7 +69,7 @@ export default function StafManagement() {
                     </div>
                     <select value={rf} onChange={e=>setRf(e.target.value)} className="text-sm border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:border-teal-500">
                       <option value="">Semua Sub-Role</option>
-                      <option>Penjaga Wahana</option><option>Teknisi</option><option>Tim Medis</option><option>Keamanan</option>
+                      <option>Penjaga Wahana</option><option>Teknisi</option><option>Operasional</option><option>Keamanan</option>
                     </select>
                   </div>
                   <button onClick={() => setModal(true)} className="flex items-center gap-1.5 bg-teal-600 text-white text-sm font-semibold px-4 py-1.5 rounded hover:bg-teal-700">
@@ -150,8 +150,8 @@ export default function StafManagement() {
                 <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
                     {l:'Nama Lengkap',k:'nama',t:'text',col:2},{l:'No. ID Staf',k:'id',t:'text'},
-                    {l:'No. HP',k:'hp',t:'tel'},{l:'Sub-Role',k:'role',t:'sel',o:['Penjaga Wahana','Teknisi','Tim Medis','Keamanan']},
-                    {l:'Zona',k:'zona',t:'sel',o:['Wahana Ekstrem','Wahana Air','Wahana Anak','Pintu Masuk','Area Parkir','Pos Medis']},
+                    {l:'No. HP',k:'hp',t:'tel'},{l:'Sub-Role',k:'role',t:'sel',o:['Penjaga Wahana','Teknisi','Operasional','Keamanan']},
+                    {l:'Zona',k:'zona',t:'sel',o:['Wahana Ekstrem','Wahana Air','Wahana Anak','Pintu Masuk','Area Parkir','Pusat Informasi']},
                     {l:'Shift',k:'shift',t:'sel',o:['Pagi','Sore','Malam']},
                   ].map(f => (
                     <div key={f.k} className={f.col===2?'col-span-2':''}>

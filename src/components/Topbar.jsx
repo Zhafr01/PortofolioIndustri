@@ -2,12 +2,12 @@ import { Link } from 'react-router-dom'
 import { ChevronRight, Home, Menu } from 'lucide-react'
 
 /**
- * Topbar — page header with breadcrumb, hamburger, and optional actions.
+ * Topbar: page header with breadcrumb, hamburger, and optional actions.
  * @param {string}     title
- * @param {Array}      breadcrumb  — [{label, to}]
- * @param {function}   onMenuClick — mobile hamburger callback
- * @param {ReactNode}  actions     — optional right-side slot
- * @param {number}     notifCount  — badge count on bell (unused here, kept for compat)
+ * @param {Array}      breadcrumb  : [{label, to}]
+ * @param {function}   onMenuClick : mobile hamburger callback
+ * @param {ReactNode}  actions     : optional right-side slot
+ * @param {number}     notifCount  : badge count on bell (unused here, kept for compat)
  */
 export default function Topbar({ title, breadcrumb = [], onMenuClick, actions }) {
   return (

@@ -32,7 +32,7 @@ const statusColor = {
 const alerts = [
   { waktu: '14:32', tipe: 'Teknis-Sensor', lokasi: 'Roller Coaster Alpha', status: 'Dilaporkan', petugas: 'Rudi H.' },
   { waktu: '13:15', tipe: 'Teknis-Manual', lokasi: 'Bianglala Raksasa', status: 'Dalam Proses', petugas: 'Bowo N.' },
-  { waktu: '11:40', tipe: 'Medis', lokasi: 'Area Parkir', status: 'Selesai', petugas: 'Sari I.' },
+  { waktu: '11:40', tipe: 'Keamanan', lokasi: 'Area Parkir', status: 'Selesai', petugas: 'Agus P.' },
 ]
 
 const feedbacks = [
@@ -64,7 +64,7 @@ export default function BranchAdmin() {
             breadcrumb={[{ label: 'Dashboard' }]}
             onMenuClick={toggleSidebar}
             actions={
-              <span className="text-xs text-slate-400">Jatim Park 2 — Senin, 4 Nov 2026</span>
+              <span className="text-xs text-slate-400">Jatim Park 2 • Senin, 4 Nov 2026</span>
             }
           />
           <main className="p-4 sm:p-6 flex flex-col gap-6">

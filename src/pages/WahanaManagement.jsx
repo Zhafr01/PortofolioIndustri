@@ -6,13 +6,13 @@ import StatBlock from '../components/StatBlock'
 import AnimatedBar from '../components/AnimatedBar'
 
 const wahanaList = [
-  { id:'W001', nama:'Roller Coaster Alpha', kat:'Ekstrem',   kap:120, tinggi:'135 cm', jam:'09.00–17.00', status:'Beroperasi', pct:92 },
-  { id:'W002', nama:'Bianglala Raksasa',    kat:'Keluarga',  kap:80,  tinggi:'Semua',  jam:'09.00–18.00', status:'Beroperasi', pct:78 },
-  { id:'W003', nama:'Flying Fox Highland',  kat:'Ekstrem',   kap:60,  tinggi:'120 cm', jam:'09.00–16.00', status:'Beroperasi', pct:85 },
+  { id:'W001', nama:'Roller Coaster Alpha', kat:'Ekstrem',   kap:120, tinggi:'135 cm', jam:'09.00 - 17.00', status:'Beroperasi', pct:92 },
+  { id:'W002', nama:'Bianglala Raksasa',    kat:'Keluarga',  kap:80,  tinggi:'Semua',  jam:'09.00 - 18.00', status:'Beroperasi', pct:78 },
+  { id:'W003', nama:'Flying Fox Highland',  kat:'Ekstrem',   kap:60,  tinggi:'120 cm', jam:'09.00 - 16.00', status:'Beroperasi', pct:85 },
   { id:'W004', nama:'Arung Jeram Express',  kat:'Air',       kap:96,  tinggi:'110 cm', jam:'Ditangguhkan', status:'Maintenance', pct:0 },
-  { id:'W005', nama:'Mini Train Junior',    kat:'Anak',      kap:40,  tinggi:'Semua',  jam:'09.00–17.30', status:'Beroperasi', pct:65 },
+  { id:'W005', nama:'Mini Train Junior',    kat:'Anak',      kap:40,  tinggi:'Semua',  jam:'09.00 - 17.30', status:'Beroperasi', pct:65 },
   { id:'W006', nama:'Carousel Klasik',      kat:'Keluarga',  kap:48,  tinggi:'Semua',  jam:'Ditangguhkan', status:'Maintenance', pct:0 },
-  { id:'W007', nama:'Drop Tower Vertigo',   kat:'Ekstrem',   kap:32,  tinggi:'140 cm', jam:'10.00–16.00', status:'Beroperasi', pct:88 },
+  { id:'W007', nama:'Drop Tower Vertigo',   kat:'Ekstrem',   kap:32,  tinggi:'140 cm', jam:'10.00 - 16.00', status:'Beroperasi', pct:88 },
   { id:'W008', nama:'Kolam Renang Olimpik', kat:'Air',       kap:200, tinggi:'Semua',  jam:'Ditutup',      status:'Tutup',      pct:0 },
 ]
 
@@ -100,7 +100,7 @@ export default function WahanaManagement() {
                             <div className="flex-1"><AnimatedBar value={w.pct} /></div>
                             <span className="text-xs text-slate-500 w-7 text-right">{w.pct}%</span>
                           </div>
-                        ) : <span className="text-xs text-slate-400">–</span>}
+                        ) : <span className="text-xs text-slate-400">0%</span>}
                       </td>
                       <td className="px-4 py-3">
                         <button onClick={() => openEdit(w)} className="text-xs text-teal-600 border border-teal-200 px-2.5 py-1 rounded hover:bg-teal-50">

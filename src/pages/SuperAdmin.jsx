@@ -32,7 +32,7 @@ const auditLog = [
   { ts:'13:55:00', user:'Budi S.',     role:'Branch Admin', aksi:'Edit Wahana W004',   ip:'192.168.1.10', status:'Sukses' },
   { ts:'13:30:00', user:'Dev Team',    role:'Super Admin',  aksi:'Restart MQTT Broker',ip:'localhost',    status:'Sukses' },
   { ts:'12:10:00', user:'Ari W.',      role:'Branch Admin', aksi:'Kirim Proposal',     ip:'192.168.2.5',  status:'Sukses' },
-  { ts:'11:45:00', user:'Unknown',     role:'–',            aksi:'Login gagal 3x',     ip:'45.33.100.9',  status:'Gagal' },
+  { ts:'11:45:00', user:'Unknown',     role:'Publik',       aksi:'Login gagal 3x',     ip:'45.33.100.9',  status:'Gagal' },
 ]
 
 function randRPS() { return Math.round(60 + Math.random() * 60) }

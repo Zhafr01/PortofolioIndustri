@@ -11,11 +11,11 @@ const sensors = [
 ]
 
 const anomaliLog = [
-  { waktu: '14:32', device: 'Sensor Getaran — Roller Coaster Alpha', nilai: '5.1g', normal: '< 4.0g', status: 'Anomali' },
-  { waktu: '14:10', device: 'Sensor Suhu — Drop Tower',              nilai: '48°C', normal: '< 50°C', status: 'Normal' },
-  { waktu: '13:55', device: 'Smart Gate — Pintu Masuk A',            nilai: '—',    normal: '—',       status: 'Normal' },
-  { waktu: '12:40', device: 'Sensor Beban — Flying Fox',             nilai: '91%',  normal: '< 90%',   status: 'Anomali' },
-  { waktu: '11:20', device: 'Sensor Lingkungan — Area Outdoor',      nilai: 'AQI 42', normal: '< 100', status: 'Normal' },
+  { waktu: '14:32', device: 'Sensor Getaran: Roller Coaster Alpha', nilai: '5.1g', normal: '< 4.0g', status: 'Anomali' },
+  { waktu: '14:10', device: 'Sensor Suhu: Drop Tower',              nilai: '48°C', normal: '< 50°C', status: 'Normal' },
+  { waktu: '13:55', device: 'Smart Gate: Pintu Masuk A',            nilai: 'Aktif', normal: 'Online', status: 'Normal' },
+  { waktu: '12:40', device: 'Sensor Beban: Flying Fox',             nilai: '91%',  normal: '< 90%',   status: 'Anomali' },
+  { waktu: '11:20', device: 'Sensor Lingkungan: Area Outdoor',      nilai: 'AQI 42', normal: '< 100', status: 'Normal' },
 ]
 
 function rand(base, pct = 5) {

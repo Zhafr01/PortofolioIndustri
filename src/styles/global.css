@@ -82,7 +82,7 @@
   }
   .btn-outline:hover { @apply bg-teal-50 border-teal-600; }
 
-  /* Card — refined with subtle shadow */
+  /* Card: refined with subtle shadow */
   .card {
     @apply bg-white border border-slate-200 rounded-lg p-6 shadow-sm;
   }
@@ -118,7 +118,7 @@
     box-shadow: 0 0 0 3px rgba(13,148,136,0.12);
   }
 
-  /* Stat block — accent left border variant */
+  /* Stat block: accent left border variant */
   .stat-block {
     @apply bg-white border border-slate-200 rounded-lg p-5 shadow-sm;
   }

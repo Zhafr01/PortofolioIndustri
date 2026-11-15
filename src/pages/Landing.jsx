@@ -40,7 +40,7 @@ const destinations = [
   {
     name: 'Jatim Park 2',
     tag: 'Kebun Binatang',
-    desc: 'Batu Secret Zoo dan Museum Satwa — destinasi satwa terlengkap di Jawa Timur.',
+    desc: 'Batu Secret Zoo dan Museum Satwa, destinasi satwa terlengkap di Jawa Timur.',
     img: `${import.meta.env.BASE_URL}images/jatimpark2.jpg`,
   },
   {
@@ -52,7 +52,7 @@ const destinations = [
   {
     name: 'BNS',
     tag: 'Hiburan Malam',
-    desc: 'Batu Night Spectacular — taman hiburan malam dengan pertunjukan cahaya dan wahana.',
+    desc: 'Batu Night Spectacular: taman hiburan malam dengan pertunjukan cahaya dan wahana.',
     img: `${import.meta.env.BASE_URL}images/bns.jpg`,
   },
   {
@@ -96,7 +96,7 @@ const features = [
   {
     icon: AlertTriangle,
     title: 'Emergency Alert Center',
-    desc: 'Pelaporan darurat medis dan keamanan langsung ke petugas tanpa perlu mencari bantuan manual.',
+    desc: 'Pelaporan gangguan keamanan dan insiden darurat langsung ke petugas tanpa perlu mencari bantuan manual.',
     tag: 'Push Notification',
   },
   {
@@ -171,7 +171,7 @@ const roadmap = [
   {
     phase: '2',
     label: 'Sistem Emergency Alert',
-    desc: 'Push-notification insiden medis & keamanan, eskalasi otomatis ke petugas terdekat.',
+    desc: 'Push-notification insiden keamanan & operasional, eskalasi otomatis ke petugas terdekat.',
     done: true,
   },
   {
@@ -363,14 +363,14 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* Right 40% — chart card */}
+        {/* Right 40%: chart card */}
         <div className="md:col-span-2">
           <div className="bg-white border border-slate-200 rounded-xl shadow-md overflow-hidden">
             {/* Card header */}
             <div className="px-5 pt-5 pb-3 border-b border-slate-100 flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold text-slate-900">Kunjungan Harian</p>
-                <p className="text-xs text-slate-400 mt-0.5">Jatim Park 2 — 7 hari terakhir</p>
+                <p className="text-xs text-slate-400 mt-0.5">Jatim Park 2: 7 hari terakhir</p>
               </div>
               <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-sm">
                 +14% minggu ini
@@ -527,7 +527,7 @@ export default function Landing() {
             7 destinasi wisata unggulan Kota Batu
           </h2>
           <p className="text-slate-500 mt-3 text-sm leading-relaxed">
-            Platform memantau kondisi real-time seluruh destinasi — dari jumlah pengunjung, wahana aktif, hingga sensor IoT.
+            Platform memantau kondisi real-time seluruh destinasi, mulai dari jumlah pengunjung, wahana aktif, hingga sensor IoT.
           </p>
         </div>
 
@@ -554,7 +554,7 @@ export default function Landing() {
           ))}
         </div>
 
-        {/* 7th destination — full width teaser */}
+        {/* 7th destination: full width teaser */}
         <div className="mt-5 group border border-slate-200 rounded-xl overflow-hidden hover:shadow-md hover:border-teal-200 transition-all duration-200 flex flex-col sm:flex-row">
           <div className="relative sm:w-72 h-48 sm:h-auto bg-slate-200 overflow-hidden flex-shrink-0">
             <img

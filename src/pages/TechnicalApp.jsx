@@ -1,297 +1,502 @@
 import { useState, useEffect } from 'react'
-import { Camera, ChevronRight, FileText } from 'lucide-react'
+import { Camera, ChevronRight, FileText, AlertTriangle, CheckCircle, Wrench, Shield, Activity, RefreshCw } from 'lucide-react'
 
 const alertData = [
-  { id:'AL-001', tipe:'Teknis', subtipe:'Sensor', wahana:'Roller Coaster Alpha', waktu:'14:32', age:'2 menit lalu', status:'Dilaporkan',   urgent:true },
-  { id:'AL-002', tipe:'Teknis', subtipe:'Manual', wahana:'Bianglala Raksasa',    waktu:'13:15', age:'1 jam lalu',   status:'Dalam Proses', urgent:false },
-  { id:'AL-005', tipe:'Teknis', subtipe:'Sensor', wahana:'Drop Tower Vertigo',   waktu:'09:55', age:'4 jam lalu',   status:'Selesai',      urgent:false },
+  { id: 'AL-001', tipe: 'Teknis', subtipe: 'Sensor', wahana: 'Roller Coaster Alpha', waktu: '14:32', age: '2 menit lalu', status: 'Dilaporkan',   urgent: true,  detail: 'Anomali getaran bearing melebihi batas 4.0g (tercatat 5.1g).' },
+  { id: 'AL-002', tipe: 'Teknis', subtipe: 'Manual', wahana: 'Bianglala Raksasa',    waktu: '13:15', age: '1 jam lalu',   status: 'Dalam Proses', urgent: false, detail: 'Pengecekan hidrolik pintu gondola 12.' },
+  { id: 'AL-004', tipe: 'Keamanan', subtipe: 'Manual', wahana: 'Pintu Masuk B',      waktu: '11:20', age: '3 jam lalu',   status: 'Selesai',      urgent: false, detail: 'Penertiban antrian pengunjung di gerbang tiket.' },
+  { id: 'AL-005', tipe: 'Teknis', subtipe: 'Sensor', wahana: 'Drop Tower Vertigo',   waktu: '09:55', age: '4 jam lalu',   status: 'Selesai',      urgent: false, detail: 'Sensor suhu rem magnetik normal kembali pada 48°C.' },
 ]
 
 const statusClass = {
-  'Dilaporkan':'bg-red-50 text-red-700 border border-red-200',
-  'Diakui':'bg-blue-50 text-blue-700',
-  'Dalam Proses':'bg-amber-50 text-amber-700',
-  'Selesai':'bg-slate-100 text-slate-500',
+  'Dilaporkan':   'bg-red-50 text-red-700 border border-red-200',
+  'Diakui':       'bg-blue-50 text-blue-700 border border-blue-200',
+  'Dalam Proses': 'bg-amber-50 text-amber-700 border border-amber-200',
+  'Selesai':      'bg-slate-100 text-slate-600 border border-slate-200',
 }
 
-const steps = ['Dilaporkan','Diakui','Dalam Proses','Selesai']
+const steps = ['Dilaporkan', 'Diakui', 'Dalam Proses', 'Selesai']
 
 function rand(base, pct = 5) {
   return +(base * (1 + (Math.random() - 0.5) * pct / 100)).toFixed(1)
 }
 
 export default function TechnicalApp() {
-  const [tab, setTab]     = useState('alerts')
+  const [tab, setTab] = useState('alerts')
   const [filterTab, setFilterTab] = useState('Semua')
-  const [screen, setScreen] = useState('list') // 'list'|'update'|'penjaga'
-  const [selectedAlert, setSelectedAlert] = useState(null)
-  const [log, setLog]     = useState('')
+  const [selectedAlert, setSelectedAlert] = useState(alertData[0])
+  const [isMobileDetailOpen, setIsMobileDetailOpen] = useState(false)
+  const [log, setLog] = useState('')
   const [newStatus, setNewStatus] = useState('Diakui')
   const [saved, setSaved] = useState(false)
   const [reporting, setReporting] = useState(false)
-  const [sensor, setSensor] = useState({ getaran:2.3, suhu:42, beban:78 })
+  const [sensor, setSensor] = useState({ getaran: 2.3, suhu: 42, beban: 78 })
 
   useEffect(() => {
     const id = setInterval(() => {
-      setSensor(s => ({ getaran:rand(s.getaran,5), suhu:rand(s.suhu,3), beban:rand(s.beban,4) }))
+      setSensor(s => ({
+        getaran: rand(s.getaran, 5),
+        suhu: rand(s.suhu, 3),
+        beban: rand(s.beban, 4)
+      }))
     }, 5000)
     return () => clearInterval(id)
   }, [])
 
+  const filterTabs = ['Semua', 'Teknis', 'Keamanan']
   const filtered = filterTab === 'Semua' ? alertData : alertData.filter(a => a.tipe === filterTab)
 
-  const filterTabs = ['Semua','Teknis','Medis','Keamanan']
   const navTabs = [
-    { id:'beranda', label:'Beranda' },
-    { id:'alerts',  label:'Alert (2)' },
-    { id:'laporan', label:'Laporan' },
-    { id:'profil',  label:'Profil' },
+    { id: 'alerts',  label: 'Alert Aktif (2)' },
+    { id: 'beranda', label: 'Monitoring Sensor' },
+    { id: 'laporan', label: 'Laporan Tugas' },
+    { id: 'profil',  label: 'Profil Teknisi' },
   ]
 
-  function openUpdate(alert) { setSelectedAlert(alert); setScreen('update'); setSaved(false) }
+  function openAlertDetail(alert) {
+    setSelectedAlert(alert)
+    setNewStatus(alert.status === 'Dilaporkan' ? 'Diakui' : alert.status)
+    setSaved(false)
+    setIsMobileDetailOpen(true)
+  }
+
+  function handleSaveStatus() {
+    if (selectedAlert) {
+      selectedAlert.status = newStatus
+      setSaved(true)
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-start justify-center">
-      <div className="w-full max-w-sm min-h-screen bg-white relative flex flex-col shadow-xl">
-
-        {/* Top header */}
-        <div className="bg-slate-900 px-5 py-4 text-white">
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="font-display text-lg">Halo, Rudi Hartono</p>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs text-slate-300">Teknisi Wahana</span>
-                <span className="text-xs bg-teal-600 text-white font-semibold px-2 py-0.5 rounded-sm">ON DUTY</span>
+    <div className="min-h-screen bg-slate-100 text-slate-800 flex flex-col">
+      {/* Top Header: Responsive for mobile and desktop */}
+      <header className="bg-slate-900 text-white sticky top-0 z-40 shadow-md">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-teal-600 rounded-md flex items-center justify-center font-display text-white">
+                <Wrench size={18} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold text-sm sm:text-base leading-tight">Rudi Hartono</p>
+                  <span className="text-[10px] bg-teal-600 text-white font-bold px-2 py-0.5 rounded-sm">
+                    ON DUTY
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5">Teknisi Wahana • Jatim Park 2 (Zona Ekstrem)</p>
               </div>
             </div>
-            <div className="text-right text-xs text-slate-400">
-              <p>Jatim Park 2</p>
-              <p>Wahana Ekstrem</p>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-1">
+              {navTabs.map(t => (
+                <button
+                  key={t.id}
+                  onClick={() => setTab(t.id)}
+                  className={`px-3.5 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors ${
+                    tab === t.id
+                      ? 'bg-slate-800 text-white border border-slate-700'
+                      : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </nav>
+
+            <div className="text-right text-xs text-slate-400 hidden sm:block">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse" />
+              Sistem IoT Aktif
             </div>
           </div>
         </div>
+      </header>
 
-        <div className="flex-1 overflow-y-auto pb-16">
-          {/* ALERTS SCREEN */}
-          {tab === 'alerts' && screen === 'list' && (
-            <div className="p-4 flex flex-col gap-4">
-              {/* Filter tabs */}
-              <div className="flex border-b border-slate-100 gap-4">
-                {filterTabs.map(t => (
-                  <button key={t} onClick={() => setFilterTab(t)}
-                    className={`pb-2 text-xs font-medium ${filterTab===t?'border-b-2 border-teal-600 text-teal-600':'text-slate-400'}`}>
-                    {t}
-                  </button>
-                ))}
-              </div>
-
-              {filtered.map((a, i) => (
-                <div key={i}
-                  className={`border-l-4 pl-3 pr-3 py-3 rounded-r-md ${
-                    a.urgent ? 'border-red-500 bg-red-50 alert-urgent'
-                    : a.status === 'Selesai' ? 'border-slate-200 bg-slate-50 opacity-70'
-                    : 'border-amber-400 bg-amber-50'
-                  }`}>
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <p className={`text-xs font-bold uppercase ${a.urgent?'text-red-700':'text-amber-700'}`}>
-                        {a.tipe} — {a.subtipe}
-                      </p>
-                      <p className="text-sm font-semibold text-slate-800 mt-0.5">{a.wahana}</p>
-                      <p className="text-xs text-slate-500 mt-0.5">{a.waktu} · {a.age}</p>
-                    </div>
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-sm ${statusClass[a.status]}`}>{a.status}</span>
-                  </div>
-                  {a.status !== 'Selesai' && (
-                    <div className="flex gap-2 mt-2">
-                      <button onClick={() => openUpdate(a)}
-                        className="flex-1 bg-teal-600 text-white text-xs font-semibold py-2 rounded">
-                        {a.status === 'Dilaporkan' ? 'Akui Alert' : 'Perbarui Status'}
-                      </button>
-                      <button className="border border-slate-200 text-slate-600 text-xs px-3 py-2 rounded">Detail</button>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* STATUS UPDATE SCREEN */}
-          {tab === 'alerts' && screen === 'update' && selectedAlert && (
-            <div className="p-4 flex flex-col gap-5">
-              <button onClick={() => setScreen('list')} className="text-sm text-teal-600 flex items-center gap-1">
-                ← Kembali ke daftar
-              </button>
+      {/* Main Content Area */}
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 md:pb-12">
+        {/* TAB 1: ALERTS & INCIDENT RESOLUTION */}
+        {tab === 'alerts' && (
+          <div className="flex flex-col gap-6">
+            {/* Header info */}
+            <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Detail Alert</p>
-                <p className="font-semibold text-slate-900">{selectedAlert.tipe} — {selectedAlert.subtipe}</p>
-                <p className="text-sm text-slate-700">{selectedAlert.wahana}</p>
-                <p className="text-xs text-slate-400 mt-1">{selectedAlert.waktu} · {selectedAlert.age}</p>
+                <p className="font-display text-xl text-slate-900">Pusat Penanganan Alert &amp; Insiden</p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Menerima pemicu otomatis dari sensor getaran/suhu dan laporan manual staf lapangan.
+                </p>
               </div>
-
-              {/* Timeline */}
-              <div>
-                <p className="text-xs font-semibold text-slate-700 mb-3">Status Penanganan</p>
-                <div className="flex flex-col gap-0">
-                  {steps.map((s, i) => {
-                    const idx = steps.indexOf(selectedAlert.status)
-                    const done = i <= idx
-                    return (
-                      <div key={s} className="flex gap-3 items-start">
-                        <div className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold flex-shrink-0 ${done?'bg-teal-600 text-white':'bg-slate-100 text-slate-400'}`}>{i+1}</div>
-                        <div className="pb-4">
-                          <p className={`text-sm ${done?'text-teal-700 font-semibold':'text-slate-400'}`}>{s}</p>
-                          {i < steps.length-1 && <div className="mt-1 ml-0 w-px h-4 bg-slate-200" />}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Ubah Status</label>
-                <select value={newStatus} onChange={e=>setNewStatus(e.target.value)}
-                  className="w-full text-sm border border-slate-200 rounded px-3 py-2 focus:outline-none focus:border-teal-500">
-                  {steps.filter(s=>s!=='Dilaporkan').map(s=><option key={s}>{s}</option>)}
-                </select>
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Catatan Tindakan</label>
-                <textarea value={log} onChange={e=>setLog(e.target.value)} rows={4}
-                  placeholder="Deskripsikan tindakan yang dilakukan..."
-                  className="w-full text-sm border border-slate-200 rounded px-3 py-2 focus:outline-none focus:border-teal-500 resize-none" />
-              </div>
-
-              <button className="w-full border border-slate-200 text-slate-600 text-sm py-2.5 rounded flex items-center justify-center gap-2">
-                <Camera size={16} /> Unggah Foto
-              </button>
-
-              {!saved ? (
-                <button onClick={() => setSaved(true)} className="w-full bg-teal-600 text-white text-sm font-semibold py-2.5 rounded">
-                  Simpan Pembaruan
-                </button>
-              ) : (
-                <div className="bg-emerald-50 text-emerald-700 text-sm text-center py-3 rounded font-medium">
-                  Status diperbarui. <button onClick={() => setScreen('list')} className="underline">Kembali</button>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* PENJAGA WAHANA SCREEN */}
-          {tab === 'beranda' && screen !== 'update' && (
-            <div className="p-4 flex flex-col gap-6">
-              <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Wahana Ditugaskan</p>
-                <p className="font-display text-xl text-slate-900">Roller Coaster Alpha</p>
-              </div>
-
-              <div>
-                <p className="text-xs font-semibold text-slate-700 mb-3">Pembacaan Sensor Real-time</p>
-                <div className="grid grid-cols-3 gap-4">
-                  {[['Getaran', sensor.getaran+'g'], ['Suhu', sensor.suhu+'°C'], ['Beban', sensor.beban+'%']].map(([l,v]) => (
-                    <div key={l} className="bg-slate-50 rounded px-3 py-3 text-center">
-                      <p className="text-xs text-slate-500">{l}</p>
-                      <p className="font-display text-xl text-slate-900 mt-1">{v}</p>
-                    </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-500 font-medium">Filter Kategori:</span>
+                <div className="flex gap-1 bg-slate-100 p-1 rounded-md border border-slate-200">
+                  {filterTabs.map(t => (
+                    <button
+                      key={t}
+                      onClick={() => setFilterTab(t)}
+                      className={`px-3 py-1 text-xs font-semibold rounded ${
+                        filterTab === t ? 'bg-white text-teal-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      {t}
+                    </button>
                   ))}
                 </div>
               </div>
+            </div>
 
-              <button onClick={() => setReporting(v => !v)}
-                className="w-full border-2 border-red-500 text-red-600 text-sm font-semibold py-3 rounded">
-                Laporkan Masalah Teknis
-              </button>
+            {/* Desktop 2-Column Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Left Column: Alert List (7 cols on lg) */}
+              <div className={`lg:col-span-7 flex flex-col gap-3 ${isMobileDetailOpen ? 'hidden lg:flex' : 'flex'}`}>
+                {filtered.map((a) => {
+                  const isSelected = selectedAlert?.id === a.id
+                  return (
+                    <div
+                      key={a.id}
+                      onClick={() => openAlertDetail(a)}
+                      className={`cursor-pointer border rounded-lg p-4 transition-all duration-200 ${
+                        isSelected ? 'border-teal-600 ring-2 ring-teal-50 bg-white shadow-sm' : 'bg-white border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+                            a.urgent ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'
+                          }`}>
+                            {a.tipe} : {a.subtipe}
+                          </span>
+                          <span className="text-xs text-slate-400">• {a.waktu} ({a.age})</span>
+                        </div>
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-sm ${statusClass[a.status]}`}>
+                          {a.status}
+                        </span>
+                      </div>
 
-              {reporting && (
-                <div className="flex flex-col gap-3 border border-slate-200 rounded-md p-4">
-                  <div>
-                    <label className="text-xs font-semibold text-slate-700 block mb-1">Deskripsi Masalah</label>
-                    <textarea rows={3} placeholder="Jelaskan masalah yang ditemukan..."
-                      className="w-full text-sm border border-slate-200 rounded px-3 py-2 focus:outline-none focus:border-teal-500 resize-none" />
+                      <p className="font-semibold text-slate-900 text-sm">{a.wahana}</p>
+                      <p className="text-xs text-slate-600 mt-1 line-clamp-2">{a.detail}</p>
+
+                      <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-slate-100">
+                        <span className="text-[11px] text-slate-400 font-mono">ID: {a.id}</span>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); openAlertDetail(a) }}
+                          className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"
+                        >
+                          {a.status === 'Dilaporkan' ? 'Tanggapi Alert →' : 'Perbarui Status →'}
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Right Column: Alert Detail & Actions (5 cols on lg) */}
+              <div className={`lg:col-span-5 ${isMobileDetailOpen ? 'block' : 'hidden lg:block'}`}>
+                {selectedAlert ? (
+                  <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-xs sticky top-20 flex flex-col gap-5">
+                    {/* Mobile Back Button */}
+                    <div className="flex lg:hidden justify-between items-center pb-2 border-b border-slate-100">
+                      <button
+                        onClick={() => setIsMobileDetailOpen(false)}
+                        className="text-xs font-semibold text-teal-600 flex items-center gap-1"
+                      >
+                        ← Kembali ke Daftar Alert
+                      </button>
+                    </div>
+
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                          Detail Inspeksi {selectedAlert.id}
+                        </span>
+                        <p className="font-display text-lg text-slate-900 mt-0.5">{selectedAlert.wahana}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">{selectedAlert.tipe} / {selectedAlert.subtipe} • {selectedAlert.waktu}</p>
+                      </div>
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-sm ${statusClass[selectedAlert.status]}`}>
+                        {selectedAlert.status}
+                      </span>
+                    </div>
+
+                    {/* Sensor / Anomaly Info Box */}
+                    <div className="bg-slate-50 border border-slate-200 rounded p-3 text-xs text-slate-700">
+                      <p className="font-semibold text-slate-800 mb-1">Catatan Diagnosa:</p>
+                      <p className="text-slate-600 leading-relaxed">{selectedAlert.detail}</p>
+                    </div>
+
+                    {/* Timeline Audit Trail */}
+                    <div>
+                      <p className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-3">Status Tahapan Audit</p>
+                      <div className="flex flex-col gap-2">
+                        {steps.map((s, i) => {
+                          const currentIdx = steps.indexOf(selectedAlert.status)
+                          const isDone = i <= currentIdx
+                          return (
+                            <div key={s} className="flex items-center gap-3">
+                              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                                isDone ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-400'
+                              }`}>
+                                {isDone ? '✓' : i + 1}
+                              </div>
+                              <span className={`text-xs font-medium ${isDone ? 'text-slate-900 font-semibold' : 'text-slate-400'}`}>
+                                {s}
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Change Status Dropdown */}
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 block mb-1.5">Perbarui Status Penanganan</label>
+                      <select
+                        value={newStatus}
+                        onChange={e => setNewStatus(e.target.value)}
+                        className="w-full text-xs border border-slate-200 rounded px-3 py-2 bg-white focus:outline-none focus:border-teal-500"
+                      >
+                        {steps.filter(s => s !== 'Dilaporkan').map(s => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Action Notes */}
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 block mb-1.5">Catatan Tindakan Lapangan</label>
+                      <textarea
+                        value={log}
+                        onChange={e => setLog(e.target.value)}
+                        rows={3}
+                        placeholder="Deskripsikan tindakan penggantian part, uji coba beban, atau rekomendasi operasional..."
+                        className="w-full text-xs border border-slate-200 rounded p-2.5 focus:outline-none focus:border-teal-500 resize-none"
+                      />
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button className="flex-1 border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold py-2.5 rounded flex items-center justify-center gap-1.5">
+                        <Camera size={14} /> Unggah Foto Bukti
+                      </button>
+                      <button
+                        onClick={handleSaveStatus}
+                        className="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-2.5 rounded transition-colors"
+                      >
+                        Simpan Tindakan
+                      </button>
+                    </div>
+
+                    {saved && (
+                      <div className="p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded text-center font-medium flex items-center justify-center gap-1.5">
+                        <CheckCircle size={14} /> Status berhasil disimpan ke audit log.
+                      </div>
+                    )}
                   </div>
+                ) : (
+                  <div className="bg-white border border-slate-200 rounded-lg p-8 text-center text-slate-400">
+                    Pilih alert di sebelah kiri untuk melihat detail penanganan.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: MONITORING SENSOR */}
+        {tab === 'beranda' && (
+          <div className="flex flex-col gap-6">
+            <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <p className="text-xs text-slate-400 uppercase tracking-widest font-semibold">Wahana Ditugaskan</p>
+                <p className="font-display text-2xl text-slate-900 mt-0.5">Roller Coaster Alpha</p>
+                <p className="text-xs text-slate-500 mt-1">Zona Wahana Ekstrem • Jatim Park 2 • Sensor Telemetri Aktif</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setReporting(v => !v)}
+                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-4 py-2.5 rounded flex items-center gap-2 transition-colors shadow-xs"
+                >
+                  <AlertTriangle size={14} /> Laporkan Masalah Teknis
+                </button>
+              </div>
+            </div>
+
+            {/* Real-time Sensor Metrics */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-xs">
+                <div className="flex justify-between items-center text-xs text-slate-500 mb-2">
+                  <span className="font-semibold">Sensor Getaran Bearing</span>
+                  <span className="text-teal-600 font-mono">Batas: &lt; 4.0g</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <p className="font-display text-3xl text-slate-900">{sensor.getaran}g</p>
+                  <span className="text-xs text-emerald-600 font-medium">Normal</span>
+                </div>
+                <div className="mt-3 w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-teal-600 h-full rounded-full transition-all duration-500" style={{ width: `${(sensor.getaran / 5) * 100}%` }} />
+                </div>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-xs">
+                <div className="flex justify-between items-center text-xs text-slate-500 mb-2">
+                  <span className="font-semibold">Sensor Suhu Motor Penggerak</span>
+                  <span className="text-teal-600 font-mono">Batas: &lt; 65°C</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <p className="font-display text-3xl text-slate-900">{sensor.suhu}°C</p>
+                  <span className="text-xs text-emerald-600 font-medium">Stabil</span>
+                </div>
+                <div className="mt-3 w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-amber-500 h-full rounded-full transition-all duration-500" style={{ width: `${(sensor.suhu / 80) * 100}%` }} />
+                </div>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-xs">
+                <div className="flex justify-between items-center text-xs text-slate-500 mb-2">
+                  <span className="font-semibold">Sensor Beban Rangkaian Kereta</span>
+                  <span className="text-teal-600 font-mono">Batas: &lt; 90%</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <p className="font-display text-3xl text-slate-900">{sensor.beban}%</p>
+                  <span className="text-xs text-teal-600 font-medium">Operasional</span>
+                </div>
+                <div className="mt-3 w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-teal-600 h-full rounded-full transition-all duration-500" style={{ width: `${sensor.beban}%` }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Incident Reporting Form Toggle */}
+            {reporting && (
+              <div className="bg-white border-2 border-red-200 rounded-lg p-6 shadow-sm flex flex-col gap-4">
+                <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+                  <p className="font-semibold text-slate-900 text-sm">Form Laporan Masalah Teknis Manual</p>
+                  <button onClick={() => setReporting(false)} className="text-xs text-slate-400 hover:text-slate-600">✕ Tutup</button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-semibold text-slate-700 block mb-1">Kategori</label>
-                    <div className="flex gap-3">
-                      {['Mekanis','Listrik','Lainnya'].map(k => (
-                        <label key={k} className="flex items-center gap-1.5 text-sm text-slate-700 cursor-pointer">
-                          <input type="radio" name="kat" defaultChecked={k==='Mekanis'} className="accent-teal-600" />
+                    <label className="text-xs font-semibold text-slate-700 block mb-1.5">Kategori Masalah</label>
+                    <div className="flex gap-4">
+                      {['Mekanis', 'Kelistrikan', 'Sensor IoT'].map(k => (
+                        <label key={k} className="flex items-center gap-1.5 text-xs text-slate-700 font-medium cursor-pointer">
+                          <input type="radio" name="kat" defaultChecked={k === 'Mekanis'} className="accent-teal-600" />
                           {k}
                         </label>
                       ))}
                     </div>
                   </div>
-                  <button onClick={() => setReporting(false)} className="bg-red-600 text-white text-sm font-semibold py-2.5 rounded">
-                    Kirim Laporan
+                  <div>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1.5">Tingkat Urgensi</label>
+                    <select className="w-full text-xs border border-slate-200 rounded px-3 py-2 bg-white">
+                      <option>Tinggi (Hentikan sementara wahana)</option>
+                      <option>Sedang (Perlu pengecekan shift berikutnya)</option>
+                      <option>Rendah (Pembersihan / pelumasan)</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1.5">Deskripsi Temuan Lapangan</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Jelaskan detail indikasi kelainan atau bunyi gesekan abnormal..."
+                    className="w-full text-xs border border-slate-200 rounded p-2.5 focus:outline-none focus:border-teal-500"
+                  />
+                </div>
+                <div className="flex justify-end gap-3">
+                  <button onClick={() => setReporting(false)} className="text-xs px-4 py-2 border border-slate-200 rounded text-slate-600">
+                    Batal
+                  </button>
+                  <button onClick={() => setReporting(false)} className="text-xs px-4 py-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700">
+                    Kirim ke Branch Admin &amp; Log Insiden
                   </button>
                 </div>
-              )}
-
-              <div className="border-t border-slate-100 pt-4">
-                <p className="text-sm font-semibold text-slate-900 mb-3">Alert Aktif</p>
-                <button onClick={() => setTab('alerts')} className="w-full text-left bg-red-50 border border-red-100 rounded px-4 py-3 flex justify-between items-center">
-                  <div>
-                    <p className="text-sm font-semibold text-red-700">2 alert aktif</p>
-                    <p className="text-xs text-red-400">Memerlukan tindakan</p>
-                  </div>
-                  <ChevronRight size={16} className="text-red-400" />
-                </button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        )}
 
-          {/* LAPORAN */}
-          {tab === 'laporan' && (
-            <div className="p-4 flex flex-col gap-5">
-              <p className="font-display text-lg text-slate-900">Laporan Kerja</p>
+        {/* TAB 3: LAPORAN TUGAS */}
+        {tab === 'laporan' && (
+          <div className="max-w-3xl mx-auto bg-white border border-slate-200 rounded-lg p-6 shadow-xs flex flex-col gap-4">
+            <p className="font-display text-xl text-slate-900 mb-1">Laporan Kerja &amp; Log Perawatan</p>
+            <p className="text-xs text-slate-500 mb-3">Dokumentasi hasil inspeksi rutin dan tindak lanjut perbaikan teknis.</p>
+
+            <div className="divide-y divide-slate-100 text-xs">
               {[
-                { label:'Laporan Harian — 4 Nov 2026', status:'Belum dikirim' },
-                { label:'Laporan Mingguan — Okt W4',  status:'Terkirim' },
+                { label: 'Laporan Harian Teknisi: 4 Nov 2026', status: 'Draft (Belum Dikirim)', date: 'Hari ini, 15:00' },
+                { label: 'Kalibrasi Sensor Getaran: Roller Coaster Alpha', status: 'Terkirim', date: '3 Nov 2026, 17:30' },
+                { label: 'Inspeksi Berkala Motor Hidrolik: Bianglala', status: 'Terkirim', date: '1 Nov 2026, 16:45' },
+                { label: 'Laporan Mingguan: Oktober Minggu ke-4', status: 'Disetujui Branch Admin', date: '30 Okt 2026, 18:00' },
               ].map((r, i) => (
-                <div key={i} className="flex justify-between items-center py-3 border-b border-slate-100">
-                  <div>
-                    <p className="text-sm font-medium text-slate-800">{r.label}</p>
-                    <p className={`text-xs mt-0.5 ${r.status==='Terkirim'?'text-teal-600':'text-amber-600'}`}>{r.status}</p>
+                <div key={i} className="py-3.5 flex justify-between items-center hover:bg-slate-50 px-2 rounded cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <FileText size={18} className="text-slate-400" />
+                    <div>
+                      <p className="font-semibold text-slate-800 text-sm">{r.label}</p>
+                      <p className="text-slate-400 mt-0.5">{r.date}</p>
+                    </div>
                   </div>
-                  <FileText size={16} className="text-slate-400" />
+                  <span className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                    r.status.includes('Terkirim') || r.status.includes('Disetujui') ? 'bg-teal-50 text-teal-700' : 'bg-amber-50 text-amber-700'
+                  }`}>
+                    {r.status}
+                  </span>
                 </div>
               ))}
             </div>
-          )}
+          </div>
+        )}
 
-          {/* PROFIL */}
-          {tab === 'profil' && (
-            <div className="p-4 flex flex-col gap-5">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-teal-600 rounded-md flex items-center justify-center text-white font-bold text-xl">RH</div>
-                <div>
-                  <p className="font-semibold text-slate-900">Rudi Hartono</p>
-                  <p className="text-sm text-slate-500">Teknisi Wahana · ID: T-001</p>
-                  <span className="text-xs bg-teal-100 text-teal-700 font-semibold px-2 py-0.5 rounded-sm">ON DUTY</span>
+        {/* TAB 4: PROFIL */}
+        {tab === 'profil' && (
+          <div className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-lg p-6 shadow-xs">
+            <div className="flex items-center gap-4 pb-6 border-b border-slate-100">
+              <div className="w-16 h-16 bg-slate-900 rounded-md flex items-center justify-center text-white font-bold text-2xl shadow-xs">
+                RH
+              </div>
+              <div>
+                <p className="font-display text-xl text-slate-900">Rudi Hartono</p>
+                <p className="text-xs text-slate-500">ID Pegawai: T-001 • Lisensi Teknisi Madya</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-[10px] bg-teal-600 text-white font-semibold px-2 py-0.5 rounded-sm">
+                    ON DUTY
+                  </span>
+                  <span className="text-xs text-slate-500">Shift Pagi: 08.00 - 17.00 WIB</span>
                 </div>
               </div>
-              {['Riwayat Alert','Jadwal Shift','Pengaturan','Bantuan'].map(item => (
-                <div key={item} className="flex justify-between items-center py-3 border-b border-slate-100 text-sm text-slate-700">
-                  {item} <ChevronRight size={16} className="text-slate-400" />
+            </div>
+
+            <div className="divide-y divide-slate-100 text-xs mt-3">
+              {[
+                { title: 'Wahana Penugasan', desc: 'Roller Coaster Alpha, Drop Tower Vertigo' },
+                { title: 'Jadwal Shift & Piket', desc: 'Senin - Jumat (08.00 - 17.00 WIB)' },
+                { title: 'SOP Penanganan Anomali Sensor', desc: 'Prosedur eskalasi otomatis 5 menit' },
+                { title: 'Log Riwayat Penanganan', desc: '48 insiden terselesaikan bulan ini' },
+              ].map((item, idx) => (
+                <div key={idx} className="py-3.5 flex justify-between items-center hover:bg-slate-50 px-2 rounded cursor-pointer">
+                  <div>
+                    <p className="font-semibold text-slate-800 text-sm">{item.title}</p>
+                    <p className="text-slate-500 mt-0.5">{item.desc}</p>
+                  </div>
+                  <ChevronRight size={16} className="text-slate-400" />
                 </div>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+      </main>
 
-        {/* Bottom nav */}
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-sm border-t border-slate-200 bg-white flex">
-          {navTabs.map(t => (
-            <button key={t.id} onClick={() => { setTab(t.id); if(t.id!=='alerts') setScreen('list') }}
-              className={`flex-1 py-3 text-xs font-medium ${tab===t.id?'text-teal-600':'text-slate-400'}`}>
-              {t.label}
-            </button>
-          ))}
-        </nav>
-      </div>
+      {/* Mobile Bottom Navigation Bar: ONLY on mobile (md:hidden) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 border-t border-slate-200 bg-white z-40 flex shadow-lg">
+        {navTabs.map(t => (
+          <button
+            key={t.id}
+            onClick={() => { setTab(t.id); setIsMobileDetailOpen(false) }}
+            className={`flex-1 py-3 text-xs font-medium flex flex-col items-center justify-center ${
+              tab === t.id ? 'text-teal-600 font-semibold' : 'text-slate-400'
+            }`}
+          >
+            {t.label.split(' ')[0]}
+          </button>
+        ))}
+      </nav>
     </div>
   )
 }
-

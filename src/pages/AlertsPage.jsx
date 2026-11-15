@@ -7,11 +7,11 @@ import StatBlock from '../components/StatBlock'
 const all = [
   { id:'AL-001', waktu:'14:32', tipe:'Teknis', subtipe:'Sensor', lokasi:'Roller Coaster Alpha', pelapor:'Sensor IoT',   penerima:'Rudi H.', status:'Dilaporkan' },
   { id:'AL-002', waktu:'13:15', tipe:'Teknis', subtipe:'Manual', lokasi:'Bianglala Raksasa',    pelapor:'Dewi W.',     penerima:'Bowo N.', status:'Dalam Proses' },
-  { id:'AL-003', waktu:'11:40', tipe:'Medis',  subtipe:'',       lokasi:'Area Parkir',           pelapor:'Pengunjung',  penerima:'Sari I.', status:'Selesai' },
-  { id:'AL-004', waktu:'10:22', tipe:'Keamanan',subtipe:'',      lokasi:'Pintu Masuk B',         pelapor:'Pengunjung',  penerima:'Agus P.', status:'Selesai' },
+  { id:'AL-003', waktu:'11:40', tipe:'Keamanan', subtipe:'Manual', lokasi:'Area Parkir',        pelapor:'Pengunjung',  penerima:'Agus P.', status:'Selesai' },
+  { id:'AL-004', waktu:'10:22', tipe:'Keamanan', subtipe:'Manual', lokasi:'Pintu Masuk B',      pelapor:'Pengunjung',  penerima:'Agus P.', status:'Selesai' },
   { id:'AL-005', waktu:'09:55', tipe:'Teknis', subtipe:'Sensor', lokasi:'Drop Tower Vertigo',    pelapor:'Sensor IoT',  penerima:'Rudi H.', status:'Diakui' },
-  { id:'AL-006', waktu:'09:30', tipe:'Medis',  subtipe:'',       lokasi:'Wahana Anak',           pelapor:'Pengunjung',  penerima:'Nanda R.',status:'Selesai' },
-  { id:'AL-007', waktu:'08:45', tipe:'Keamanan',subtipe:'',      lokasi:'Area Parkir',           pelapor:'Pengunjung',  penerima:'Fajar H.',status:'Selesai' },
+  { id:'AL-006', waktu:'09:30', tipe:'Keamanan', subtipe:'Manual', lokasi:'Wahana Anak',        pelapor:'Pengunjung',  penerima:'Fajar H.', status:'Selesai' },
+  { id:'AL-007', waktu:'08:45', tipe:'Keamanan', subtipe:'Manual', lokasi:'Area Parkir',        pelapor:'Pengunjung',  penerima:'Fajar H.', status:'Selesai' },
   { id:'AL-008', waktu:'08:10', tipe:'Teknis', subtipe:'Manual', lokasi:'Arung Jeram Express',   pelapor:'Lestari M.', penerima:'Bowo N.', status:'Selesai' },
 ]
 
@@ -22,7 +22,7 @@ const statusClass = {
   'Selesai':     'bg-slate-100 text-slate-500',
 }
 
-const tabs = ['Semua','Teknis','Medis','Keamanan']
+const tabs = ['Semua','Teknis','Keamanan']
 
 export default function AlertsPage() {
   const [activeTab, setActiveTab] = useState('Semua')
@@ -66,7 +66,7 @@ export default function AlertsPage() {
                   <tr key={i} className="border-b border-slate-50 last:border-0 hover:bg-slate-50">
                     <td className="px-4 py-3 text-xs text-slate-400">{a.id}</td>
                     <td className="px-4 py-3 text-slate-500">{a.waktu}</td>
-                    <td className="px-4 py-3 font-medium text-slate-800">{a.tipe}{a.subtipe ? ` — ${a.subtipe}` : ''}</td>
+                    <td className="px-4 py-3 font-medium text-slate-800">{a.tipe}{a.subtipe ? ` / ${a.subtipe}` : ''}</td>
                     <td className="px-4 py-3 text-slate-600">{a.lokasi}</td>
                     <td className="px-4 py-3 text-slate-600">{a.pelapor}</td>
                     <td className="px-4 py-3 text-slate-600">{a.penerima}</td>

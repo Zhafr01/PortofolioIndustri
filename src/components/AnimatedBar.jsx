@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 
 /**
- * AnimatedBar — fills from 0 to `value` on mount.
- * @param {number} value  — 0-100
- * @param {string} color  — tailwind bg class or 'teal'|'amber'|'red'
+ * AnimatedBar: fills from 0 to `value` on mount.
+ * @param {number} value  : 0-100
+ * @param {string} color  : tailwind bg class or 'teal'|'amber'|'red'
  */
 export default function AnimatedBar({ value = 0, color = 'teal' }) {
   const [width, setWidth] = useState(0)
